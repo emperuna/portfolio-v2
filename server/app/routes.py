@@ -13,14 +13,8 @@ def get_status():
         current_app.logger.info("Simulating latency spike")
         time.sleep(0.5)
 
-    return jsonify({
-        "status": "operational",
-        "system": {
-            "cpu": random.randint(5, 45),
-            "memory": random.randint(30, 60),
-            "uptime_seconds": 3600 + random.randint(0, 500)
-        }
-    })
+    from .services.simulation_service import SimulationService
+    return jsonify(SimulationService.get_system_metrics())
 
 @api_bp.route('/meta')
 def get_meta():
