@@ -1,19 +1,11 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { Hero } from '../features/landing/components/Hero';
-import Bio from '../features/landing/Bio.astro';
-import ProjectGrid from '../features/portfolio/ProjectGrid.astro';
-import HealthCheck from '../components/HealthCheck';
+import CreativeLayout from '../layouts/CreativeLayout.astro';
+import { HeroSection } from '../features/hero/HeroSection';
+import { BackgroundParticles } from '../components/ui/BackgroundParticles';
 ---
 
-<Layout>
-  <main class="flex min-h-screen flex-col">
-    <Hero client:load />
-    <Bio />
-    <ProjectGrid />
-    
-    <div class="mt-20 border-t py-10 text-center text-sm text-zinc-500">
-       <HealthCheck client:idle />
-    </div>
-  </main>
-</Layout>
+<CreativeLayout>
+  <BackgroundParticles client:load />
+
+  <HeroSection client:load />
+</CreativeLayout>
