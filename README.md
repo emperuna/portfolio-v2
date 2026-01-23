@@ -16,11 +16,11 @@ The system is composed of a decoupled frontend and backend, designed to mimic a 
 
 ```mermaid
 graph TD
-    User((User)) -->|HTTPS| Cloudflare[Cloudflare Pages\n(Frontend)]
-    Cloudflare -->|Fetch /status| Render[Render.com\n(Backend API)]
+    User((User)) -->|HTTPS| Cloudflare["Cloudflare Pages<br>(Frontend)"]
+    Cloudflare -->|Fetch /status| Render["Render.com<br>(Backend API)"]
 
     subgraph Client [Astro + React]
-        Store[NanoStore\n(System State)]
+        Store["NanoStore<br>(System State)"]
         UI[Dashboard UI]
     end
 
