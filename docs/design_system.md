@@ -1,116 +1,89 @@
 # Portfolio v2 - Design Definition
 
-> **Product Context**: Systems-Oriented DevOps Portfolio — an operational system, not a marketing page. Exposes system health, deployment state, and architectural decisions.
+> **Product Context**: Systems-Oriented DevOps Portfolio — an operational system/dashboard.
 
 ## 1. Design Goals
 
-- **Operational Realism**: The UI should feel like a **running platform** — observable, imperfect, evolving.
-- **Transparency Over Polish**: Failures and trade-offs are visible. No hiding cold starts or free-tier constraints.
-- **Systems Over Pages**: Navigation mirrors infrastructure (Services, Status, Projects, Config).
-- **Modern SaaS Dashboard**: Clean typography, status pills, card layouts — **avoiding "hacker" clichés**.
+- **Operational Realism as Art**: The UI should feel like a **living system**, integrated with system health signals.
+- **Data as Texture**: Use data streams, scrolling logs, and topology lines as the primary visual texture instead of 3D models or illustrations.
+- **Narrative Infrastructure**: Use scrolling (scrollytelling) to tell the story of a system.
+- **Creative Technical**: A "Hacker-Chic" / "Command Center" vibe. **Glassmorphism**, **Monospace Typography**, and **Radiant Glows**.
 
 ## 2. Design System Foundations
 
 ### Colors: "Operational Slate"
 
-A professional, **SaaS-inspired** dark theme. Avoid neon greens/matrix terminals.
-
 | Token            | Value (`#hex`) | Usage                                    |
 | :--------------- | :------------- | :--------------------------------------- |
 | **Background**   | `#0f1117`      | Page body (Dark, not pure black).        |
 | **Surface**      | `#1c1f26`      | Cards, modals, panels.                   |
-| **Surface-Alt**  | `#252830`      | Hover states on surfaces.                |
 | **Primary**      | `#6366f1`      | CTAs, active nav items, primary actions. |
 | **Success**      | `#22c55e`      | Healthy status, "Operational" pills.     |
 | **Warning**      | `#eab308`      | Degraded, cold-start indicators.         |
 | **Danger**       | `#ef4444`      | Errors, outages, critical alerts.        |
 | **Text Primary** | `#f8fafc`      | Headings, key data.                      |
 | **Text Muted**   | `#94a3b8`      | Labels, secondary info, metadata.        |
-| **Border**       | `#2d3139`      | Subtle dividers.                         |
 
-### Status Indicators (Key DevOps Element)
+### Visual Effects
 
-| State       | Color     | Pill Example                       |
-| :---------- | :-------- | :--------------------------------- |
-| Operational | `success` | `bg-green-500/10 text-green-400`   |
-| Degraded    | `warning` | `bg-yellow-500/10 text-yellow-400` |
-| Outage      | `danger`  | `bg-red-500/10 text-red-400`       |
-| Cold Start  | `muted`   | `bg-slate-700/50 text-slate-400`   |
+- **Radiant Glows**: Large, blurred fixed-position circles (indigo/teal) behind content.
+- **Abstract Topology**: CSS/SVG grid lines, glowing nodes, and "data rain" backgrounds.
+- **Glassmorphism**: `backdrop-blur-md bg-opacity-50` for cards and nav.
 
 ### Typography
 
-- **Headings**: **Inter** (Variable). Clean, modern sans-serif.
-- **Body**: **Inter** (Regular 400, Medium 500).
-- **Code/Metrics**: **JetBrains Mono**. For status values, version numbers, endpoint paths like `/health`.
-
-### Spacing
-
-- **Base Unit**: 4px.
-- **Card Padding**: `p-4` or `p-6`.
-- **Section Gap**: `gap-6` between dashboard sections.
+- **Headings**: **Inter**. Tall x-height.
+- **Data/Code**: **JetBrains Mono**. Used heavily for metrics, logs, and labels.
 
 ## 3. Core UI Components
 
-### StatusPill (`<StatusPill status="operational" />`)
+### StatusPill (`<StatusPill />`)
 
-- Displays system health (Operational, Degraded, Outage).
-- Small, uppercase text (`text-xs`), rounded-full, subtle background tint.
+- **Style**: HUD-like. Thin border (`border-current`), low opacity background (`bg-opacity-10`), glowing text.
 
-### MetricCard (`<MetricCard />`)
+### HudCard (`<HudCard />`)
 
-- Displays a single metric (e.g., CPU: 42%, RAM: 512MB).
-- Contains: Label (muted), Value (large, mono font), optional sparkline/trend icon.
-- Border-left colored by status.
+- **Usage**: Displaying key metrics (Uptime, Commits).
+- **Style**: Glassmorphic panel with monospaced data values.
 
-### ServiceCard (`<ServiceCard />`)
+### TerminalWindow (`<TerminalWindow />`)
 
-- Represents a service (Frontend, Backend, Database).
-- Contains: Service name, status pill, endpoint, last checked, and a link to details.
+- **Usage**: "Scrollytelling" element.
+- **Style**: Black window with typewriter animation for logs.
 
-### Button (`<Button variant="primary|secondary|ghost" />`)
+### Button (`<Button />`)
 
-- **Primary**: Indigo background, white text.
-- **Secondary**: `bg-surface-alt`, `text-primary`.
-- **Ghost**: Transparent, `text-muted`, `hover:text-primary`.
-
-### Card (`<Card />`)
-
-- `bg-surface`, `border-border`, `rounded-lg`.
-- Hover: subtle border lighten, not lift.
+- **Primary**: Indigo background, glow on hover.
 
 ## 4. Layout & Interaction Patterns
 
+### "The Command Center" (Hero Layout)
+
+- **Centerpiece**: Typographic & Data. No 3D models.
+- **Background**: Interactive `HeroBackground` (Topology/Grid).
+- **HUD Elements**: `HudCard`s floating loosely.
+- **Visual Anchor**: Large monospaced counters.
+
+### "Terminal Scrollytelling" (Project Section)
+
+- **Concept**: As the user scrolls project cards, a sticky `TerminalWindow` types out related commands.
+
 ### Navigation (Header)
 
-- Sticky, `bg-background/80 backdrop-blur`.
-- Left: Logo + "Portfolio" text.
-- Right: Nav links (Home, Projects, Experience, Status).
-- Mobile: Hamburger → slide-out drawer.
-
-### Page Structure
-
-- **Multi-page** (per PRD). Pages: Home, About, Projects, Status, Experience.
-- Each page has a clear primary action.
+- **Style**: Floating "Glass Dock".
 
 ### System Status Mode
 
-- A persistent or collapsible "System Status" bar/section on the homepage or a dedicated `/status` page.
-- Shows Backend status, last deployment date, and uptime (from external monitor).
-
-### Motion (Framer Motion)
-
-- Subtle entrance animations (`opacity`, `y`).
-- Respect `prefers-reduced-motion`.
+- **Status Bar**: Fixed at bottom (like VS Code).
 
 ## 5. Accessibility & Responsiveness
 
-- **Contrast**: WCAG AA compliant. Status colors chosen for readability.
-- **Focus Rings**: `ring-2 ring-primary`.
-- **Mobile**: All cards stack; nav becomes drawer.
+- **Contrast**: WCAG AA.
+- **Motion**: `framer-motion` for float and reveal. Disable if `prefers-reduced-motion`.
 
 ## 6. Design Decisions (Confirmed)
 
-- **Logo**: Custom geometric logo (generated).
-- **Structure**: **Multi-page** application (per PRD).
-- **Style**: **Modern SaaS Dashboard** (per PRD).
-- **No Hacker Clichés**: No neon green terminals.
+- **Logo**: Custom geometric logo.
+- **Structure**: Multi-page.
+- **Style**: **Typographic & Data / Sci-Fi HUD**.
+- **Visuals**: No 3D. Emphasize Code/Stats.
