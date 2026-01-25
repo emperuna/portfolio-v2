@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../../lib/utils';
+import { TypewriterLog } from './TypewriterLog';
 
 interface LogEntry {
   id: string;
@@ -15,31 +16,59 @@ const INITIAL_LOGS: LogEntry[] = [
 ];
 
 export function HeroTerminal({ className }: { className?: string }) {
-  const [logs, setLogs] = useState<LogEntry[]>(INITIAL_LOGS);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [queue, setQueue] = useState<LogEntry[]>(INITIAL_LOGS);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  // In a real implementation, this would subscribe to a scroll store or intersection observer
-  // For now, we'll simulate activity to demonstrate the effect
+  // Auto-scroll
   useEffect(() => {
-    const interval = setInterval(() => {
-      const commands = [
-        'checking status...',
-        'ping 127.0.0.1',
-        'deploying module...',
-        'optimizing assets'
-      ];
-      const randomCmd = commands[Math.floor(Math.random() * commands.length)];
-      
-      const newLog: LogEntry = {
-        id: Date.now().toString(),
-        text: `> ${randomCmd}`,
-        type: 'info'
-      };
+    if (scrollRef.current) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [logs]);
 
-      setLogs(prev => [...prev.slice(-4), newLog]);
-    }, 4000);
+  // Process Queue
+  useEffect(() => {
+    if (queue.length > 0) { 
+        const timer = setTimeout(() => {
+            const nextLog = queue[0];
+            setLogs(prev => {
+                const newLogs = [...prev, nextLog];
+                if (newLogs.length > 8) {
+                    return newLogs.slice(newLogs.length - 8);
+                }
+                return newLogs;
+            });
+            setQueue(prev => prev.slice(1));
+        }, 500); // Delay before starting next line
+        return () => clearTimeout(timer);
+    }
+  }, [queue, logs.length]);
 
-    return () => clearInterval(interval);
-  }, []);
+  // Infinite Random Logs Generator
+  useEffect(() => {
+    if (queue.length === 0) {
+        const interval = setInterval(() => {
+            const commands = [
+                'checking status...',
+                'ping 127.0.0.1',
+                'deploying module...',
+                'optimizing assets',
+                'analyzing network flow',
+                'updating registry'
+            ];
+            const randomCmd = commands[Math.floor(Math.random() * commands.length)];
+            
+            const newLog: LogEntry = {
+                id: Date.now().toString(),
+                text: `> ${randomCmd}`,
+                type: 'info'
+            };
+            setQueue(prev => [...prev, newLog]);
+        }, 3000);
+        return () => clearInterval(interval);
+    }
+  }, [queue.length]);
 
   return (
     <div className={cn(
@@ -52,7 +81,7 @@ export function HeroTerminal({ className }: { className?: string }) {
         <div className="h-2.5 w-2.5 rounded-full bg-green-500/50" />
         <span className="ml-2 text-text-muted opacity-50">terminal.exe</span>
       </div>
-      <div className="flex flex-col gap-1 p-4 h-64 overflow-hidden">
+      <div ref={scrollRef} className="flex flex-col gap-1 p-4 h-64 overflow-y-auto overflow-x-hidden scrollbar-hide">
         <AnimatePresence mode='popLayout'>
           {logs.map((log) => (
             <motion.div
@@ -67,7 +96,7 @@ export function HeroTerminal({ className }: { className?: string }) {
                 log.type === 'info' && "text-text-muted"
               )}
             >
-              {log.text}
+              <TypewriterLog text={log.text} />
             </motion.div>
           ))}
           <motion.div

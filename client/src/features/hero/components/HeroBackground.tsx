@@ -1,8 +1,23 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function HeroBackground() {
+  interface Node {
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    size: number;
+    color: string;
+    pulse: number;
+    name: string;
+  }
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [activeNode, setActiveNode] = useState<{ x: number, y: number, name: string } | null>(null);
+  const activeNodeRef = useRef<{ x: number, y: number, name: string } | null>(null);
+  const nodesRef = useRef<Node[]>([]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -23,17 +38,14 @@ export function HeroBackground() {
     const NODE_COUNT = 30;
 
     // Node System
-    interface Node {
-        x: number;
-        y: number;
-        vx: number;
-        vy: number;
-        size: number;
-        color: string;
-        pulse: number;
-    }
-    
-    const nodes: Node[] = [];
+    const nodes = nodesRef.current;
+
+    const techStack = [
+        "GitHub Actions", "Docker", "Cloudflare", "Railway", "Render", "Heroku", "Vercel", "Netlify", "Bash", "Python", "Git",
+        "Java", "JavaScript", "C#", "Dart", "HTML5", "CSS3", "Markdown",
+        "Spring Boot", "Django", "Flask", "React", "Flutter", "Tailwind CSS", "Bootstrap",
+        "VS Code", "Antigravity", "Figma"
+    ];
 
     const resize = () => {
         if (!containerRef.current || !canvas) return;
@@ -52,7 +64,8 @@ export function HeroBackground() {
                 vy: (Math.random() - 0.5) * 0.5,
                 size: Math.random() * 3 + 2,
                 color: Math.random() > 0.5 ? '#06b6d4' : '#6366f1', // Cyan / Indigo
-                pulse: Math.random() * Math.PI
+                pulse: Math.random() * Math.PI,
+                name: techStack[Math.floor(Math.random() * techStack.length)]
             });
         }
     };
@@ -89,60 +102,68 @@ export function HeroBackground() {
     const packets: Packet[] = [];
 
     const drawCore = (centerX: number, centerY: number) => {
-        // Core Glow
-        const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 200);
+        // Core Glow - Restored for depth
+        const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 350);
         gradient.addColorStop(0, 'rgba(6, 182, 212, 0.1)'); // Cyan center
         gradient.addColorStop(0.5, 'rgba(99, 102, 241, 0.05)'); // Indigo mid
         gradient.addColorStop(1, 'transparent');
         ctx.fillStyle = gradient;
         ctx.beginPath();
-        ctx.arc(centerX, centerY, 200, 0, Math.PI * 2);
+        ctx.arc(centerX, centerY, 350, 0, Math.PI * 2);
         ctx.fill();
 
-        // Rotating Rings (The "Nucleus") WITH GLITCH
+        // Rotating Rings (The "Nucleus")
         const ringCount = 3;
         for (let i = 0; i < ringCount; i++) {
-            const size = 60 + i * 30;
+            const size = 140 + i * 50; // Bigger rings
             const speed = (i % 2 === 0 ? 1 : -1) * (0.2 / (i + 1));
+            
             const angle = time * speed;
             
-            // Mouse Glitch Intensity
+            // Parallax: Shift rings opposing mouse to create depth
+            // Inner rings move less, outer rings move more (or vice versa depending on desired effect)
+            // Let's make outer rings move MORE to feel closer, inner rings static (tunnel)
+            const parallaxX = (mouseX - width / 2) * (0.02 * (i + 1));
+            const parallaxY = (mouseY - height / 2) * (0.02 * (i + 1));
+            
             const distToMouse = Math.hypot(mouseX - centerX, mouseY - centerY);
             const glitchIntensity = Math.max(0, 300 - distToMouse) / 300 * 5; // Glitch stronger when mouse close
 
             // RGB Split Drawing Helper
             const drawRing = (color: string, offsetX: number, offsetY: number) => {
                 ctx.save();
-                ctx.translate(centerX + offsetX, centerY + offsetY);
-                ctx.rotate(angle);
+                // Apply Parallax Offset here
+                ctx.translate(centerX + offsetX + parallaxX, centerY + offsetY + parallaxY);
+                // ctx.rotate(angle); // Removed rotation to stop "wobbling"
                 
                 ctx.strokeStyle = color;
-                ctx.lineWidth = 1.5;
-                ctx.setLineDash([20, 40]); 
-                ctx.globalAlpha = 0.6 - (i * 0.15); // Fade outer rings
+                ctx.lineWidth = 3; 
+                ctx.lineCap = 'round';
                 
+                // 1. Base Ring: Dotted
+                ctx.save();
+                ctx.setLineDash([0, 15]); 
+                // Animate the dots flowing
+                ctx.lineDashOffset = -time * speed * 200; 
+                
+                ctx.globalAlpha = 0.4 - (i * 0.1); // Dimmer base
                 ctx.beginPath();
                 ctx.ellipse(0, 0, size, size * 0.8, 0, 0, Math.PI * 2);
                 ctx.stroke();
                 ctx.restore();
+
+                ctx.restore();
             };
 
-            // Draw RGB Channels if glitch active
-            if (glitchIntensity > 0.5) {
-                ctx.globalCompositeOperation = 'screen';
-                drawRing('rgba(255, 0, 0, 0.5)', glitchIntensity * 2, 0);   // Red Shift
-                drawRing('rgba(0, 255, 255, 0.5)', -glitchIntensity * 2, 0); // Cyan Shift
-                ctx.globalCompositeOperation = 'source-over';
-            } else {
-                // Normal Clean Draw
-                drawRing(i === 0 ? '#06b6d4' : '#6366f1', 0, 0);
-            }
+            // Draw Clean Ring (No Glitch/Glow)
+            drawRing(i === 0 ? '#06b6d4' : '#6366f1', 0, 0);
             
             // Data Runner (White dot on ring)
             ctx.save();
-            ctx.translate(centerX, centerY);
-            ctx.rotate(angle);
-            const runnerAngle = time * speed * 2;
+            ctx.translate(centerX + parallaxX, centerY + parallaxY);
+            // ctx.rotate(angle); // No rotation for runner container either, or it misaligns
+            // We need to calculate position on the ellipse
+            const runnerAngle = time * speed * 4; // Move somewhat faster
             const rx = Math.cos(runnerAngle) * size;
             const ry = Math.sin(runnerAngle) * size * 0.8;
             ctx.fillStyle = '#fff';
@@ -200,11 +221,8 @@ export function HeroBackground() {
             ctx.stroke();
         }
 
-        // 1.5 Draw Core (Moved after topography so lines go BEHIND core glow? Or before? Before is better for depth)
-        // I'll leave core call here or move it up.
-        ctx.globalCompositeOperation = 'screen';
+        // 1.5 Draw Core
         drawCore(centerX, centerY);
-        ctx.globalCompositeOperation = 'source-over';
 
 
         // 2. Draw Geo-Nodes & Traffic
@@ -289,6 +307,26 @@ export function HeroBackground() {
                 }
             });
 
+            // Hit detection for hover
+            let foundNode = null;
+            if (nodes.length < 100) { // Safety check
+                 // Check reverse to select top node first
+                 for (let i = nodes.length - 1; i >= 0; i--) {
+                     const n = nodes[i];
+                     const dist = Math.hypot(mouseX - n.x, mouseY - n.y);
+                     if (dist < 30) { // 30px hit area
+                         foundNode = { x: n.x, y: n.y, name: n.name };
+                         break;
+                     }
+                 }
+            }
+            
+            // Debounce/Throttle state update to avoid thrashing
+            if (JSON.stringify(activeNodeRef.current) !== JSON.stringify(foundNode)) {
+                activeNodeRef.current = foundNode;
+                setActiveNode(foundNode);
+            }
+
             // Draw Node
             ctx.globalAlpha = 0.8 + Math.sin(node.pulse) * 0.2;
             ctx.fillStyle = node.color;
@@ -309,6 +347,8 @@ export function HeroBackground() {
                  ctx.stroke();
              }
         });
+        
+
 
         ctx.globalAlpha = 1;
 
@@ -349,6 +389,26 @@ export function HeroBackground() {
                 <span className="text-[10px] font-mono text-cyan-500/80 tracking-wider">LIVE MESH</span>
             </div>
         </div>
+
+        {/* Hover Tooltip */}
+        <AnimatePresence>
+            {activeNode && (
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.8, y: 10 }}
+                    style={{ 
+                        left: activeNode.x, 
+                        top: activeNode.y 
+                    }}
+                    className="absolute z-50 pointer-events-none -translate-x-1/2 -translate-y-[150%]"
+                >
+                    <div className="px-3 py-1.5 rounded bg-black/80 border border-cyan-500/50 backdrop-blur-md text-xs font-mono text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+                        {activeNode.name}
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
     </div>
   );
 }
