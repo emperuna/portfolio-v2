@@ -1,34 +1,35 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import type { SystemConfig } from '@domain/entities/SystemConfig';
 
-export function ServiceMesh({ trafficLevel = 'low' }: { trafficLevel?: 'low' | 'high' }) {
+type TrafficLevel = SystemConfig['traffic_level'];
+
+export function ServiceMesh({ trafficLevel = 'low' }: { trafficLevel?: TrafficLevel }) {
     const [hoveredNode, setHoveredNode] = useState<string | null>(null);
 
     // Mock Architecture Data
+    // Real Architecture Data
+    // Real Architecture Data (Enhanced)
     const nodes = [
-        { id: 'user', label: 'USER', x: 50, y: 50, type: 'source', stats: { latency: 'N/A', status: 'Active' } },
-        { id: 'cdn', label: 'CLOUDFLARE', x: 250, y: 50, type: 'infra', stats: { latency: '12ms', status: 'Cached' } },
-        { id: 'lb', label: 'LOAD BALANCER', x: 450, y: 50, type: 'infra', stats: { latency: '2ms', status: 'Healthy' } },
-        { id: 'fe', label: 'FRONTEND', x: 650, y: 50, type: 'service', stats: { latency: '24ms', uptime: '99.9%' } },
-        { id: 'api', label: 'API GATEWAY', x: 650, y: 150, type: 'service', stats: { latency: '45ms', requests: '1.2k/s' } },
-        { id: 'db', label: 'PRIMARY DB', x: 850, y: 150, type: 'db', stats: { latency: '5ms', connections: '420' } },
-        { id: 'cache', label: 'REDIS', x: 850, y: 50, type: 'db', stats: { latency: '<1ms', hits: '94%' } },
+        { id: 'user', label: 'USER (BROWSER)', x: 100, y: 150, type: 'source', stats: { latency: 'N/A', status: 'Active' } },
+        { id: 'edge', label: 'EDGE NETWORK', x: 300, y: 150, type: 'infra', stats: { region: 'global', status: 'Cached' } },
+        { id: 'client', label: 'CLIENT (ASTRO)', x: 500, y: 150, type: 'service', stats: { runtime: 'Vercel/Edge', status: 'Online' } },
+        { id: 'server', label: 'SERVER (FLASK)', x: 700, y: 150, type: 'service', stats: { runtime: 'Python 3.11', status: 'Active' } },
+        { id: 'github', label: 'GITHUB API', x: 900, y: 150, type: 'infra', stats: { connection: 'Rest', status: 'Linked' } }
     ];
 
     const edges = [
-        { from: 'user', to: 'cdn' },
-        { from: 'cdn', to: 'lb' },
-        { from: 'lb', to: 'fe' },
-        { from: 'fe', to: 'api' },
-        { from: 'fe', to: 'cache' },
-        { from: 'api', to: 'db' },
+        { from: 'user', to: 'edge' },
+        { from: 'edge', to: 'client' },
+        { from: 'client', to: 'server' },
+        { from: 'server', to: 'github' },
     ];
 
     // Responsive scaling (simplified)
     const viewBox = "0 0 1000 300";
     
-    // Animation Speed: High Traffic = Faster (0.5s), Low = Slower (1.5s base)
-    const speedFactor = trafficLevel === 'high' ? 0.3 : 1;
+    // Animation Speed: Higher traffic = faster packets
+    const speedFactor = trafficLevel === 'surge' ? 0.2 : (trafficLevel === 'high' ? 0.3 : 1);
 
     return (
         <div className="w-full h-full flex items-center justify-center p-4 relative">
@@ -65,10 +66,10 @@ export function ServiceMesh({ trafficLevel = 'low' }: { trafficLevel?: 'low' | '
                             {/* Animated Packet */}
                             <motion.circle 
                                 r="4" 
-                                fill={trafficLevel === 'high' ? '#fbbf24' : '#34d399'} 
+                                fill={trafficLevel === 'surge' ? '#f87171' : (trafficLevel === 'high' ? '#fbbf24' : '#34d399')} 
                                 filter="url(#glow)"
                             >
-                                <motion.animate 
+                                <motion.animate
                                     attributeName="cx"
                                     from={start.x}
                                     to={end.x}
@@ -76,7 +77,7 @@ export function ServiceMesh({ trafficLevel = 'low' }: { trafficLevel?: 'low' | '
                                     repeatCount="indefinite"
                                     begin={`${begin}s`}
                                 />
-                                <motion.animate 
+                                <animate 
                                     attributeName="cy"
                                     from={start.y}
                                     to={end.y}
@@ -84,7 +85,7 @@ export function ServiceMesh({ trafficLevel = 'low' }: { trafficLevel?: 'low' | '
                                     repeatCount="indefinite"
                                     begin={`${begin}s`}
                                 />
-                                <motion.animate 
+                                <animate 
                                     attributeName="opacity"
                                     values="0;1;0"
                                     dur={`${duration}s`}
@@ -104,6 +105,7 @@ export function ServiceMesh({ trafficLevel = 'low' }: { trafficLevel?: 'low' | '
                         onMouseEnter={() => setHoveredNode(node.id)}
                         onMouseLeave={() => setHoveredNode(null)}
                     >
+                        {/* Node Shape */}
                         <circle 
                             cx={node.x} 
                             cy={node.y} 
@@ -114,6 +116,47 @@ export function ServiceMesh({ trafficLevel = 'low' }: { trafficLevel?: 'low' | '
                             strokeWidth="2"
                             className="transition-all duration-300 group-hover:stroke-white group-hover:fill-white/20"
                         />
+                        
+                        {/* Orbitals for active services/infra */}
+                        {(node.type === 'service' || node.type === 'infra') && (
+                            <>
+                                {/* Inner Orbit */}
+                                <motion.circle
+                                    cx={node.x} cy={node.y} r="24"
+                                    fill="none" stroke={node.type === 'infra' ? '#3b82f6' : '#10b981'} strokeWidth="1" strokeOpacity="0.3" strokeDasharray="4 4"
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                                    style={{ originX: "50%", originY: "50%" }} // Ensure rotation around center
+                                />
+                                {/* Outer Orbit (Counter-rotate) */}
+                                <motion.circle
+                                    cx={node.x} cy={node.y} r="32"
+                                    fill="none" stroke={node.type === 'infra' ? '#3b82f6' : '#10b981'} strokeWidth="0.5" strokeOpacity="0.15"
+                                    animate={{ rotate: -360 }}
+                                    transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                                />
+                                {/* Satellite Group */}
+                                <motion.g
+                                    initial={{ rotate: 0 }}
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                                    style={{ originX: "50%", originY: "50%", transformBox: "fill-box" }} // Center of rotation
+                                    // Note: In SVG, transform origin is tricky. 
+                                    // Better approach: rotate around the node coordinates.
+                                >
+                                    {/* Actually, let's just use the circle logic but correct origin */}
+                                </motion.g>
+                                
+                                {/* Correct Satellite Implementation: Rotate a group centered at node */}
+                                <motion.g
+                                    style={{ x: node.x, y: node.y }} // Move group to node center
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                                >
+                                    <circle cx={0} cy={-24} r={2} fill={node.type === 'infra' ? '#3b82f6' : '#10b981'} />
+                                </motion.g>
+                            </>
+                        )}
                          {/* Hover Glow Ring */}
                         {hoveredNode === node.id && (
                             <motion.circle
@@ -158,7 +201,7 @@ export function ServiceMesh({ trafficLevel = 'low' }: { trafficLevel?: 'low' | '
                     // Convert SVG coordinates to roughly % or px for the overlay
                     // Note: This is a simplified positioning. In a real app we might use a library or getBoundingClientRect.
                     // Since viewBox is 0-1000, and we are centered, we can approximate percentages.
-                    const leftIds = ['user', 'cdn', 'lb'];
+                    const leftIds = ['user', 'edge', 'client'];
                     const isLeft = leftIds.includes(node.id);
 
                     return (

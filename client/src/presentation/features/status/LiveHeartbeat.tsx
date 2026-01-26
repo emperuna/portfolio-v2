@@ -1,13 +1,23 @@
 import { useEffect, useRef } from 'react';
 
-export function LiveHeartbeat({ cpuLoad = 0 }: { cpuLoad?: number }) {
+export function LiveHeartbeat({ cpuLoad = 0, systemStatus = 'healthy' }: { cpuLoad?: number; systemStatus?: 'healthy' | 'degraded' | 'offline' }) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    // Persist waveform history without triggering re-renders
+    const historyRef = useRef<number[]>([]);
     const cpuRef = useRef(cpuLoad);
+    const timeRef = useRef(0);
+    const lastFrameRef = useRef<number | null>(null);
+    const modeRef = useRef<'healthy' | 'degraded' | 'offline'>('healthy');
 
-    // Keep ref in sync for animation loop
+    // Keep ref in sync
     useEffect(() => {
+        if (cpuLoad < 0) return;
         cpuRef.current = cpuLoad;
     }, [cpuLoad]);
+
+    useEffect(() => {
+        modeRef.current = systemStatus;
+    }, [systemStatus]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -16,10 +26,6 @@ export function LiveHeartbeat({ cpuLoad = 0 }: { cpuLoad?: number }) {
         if (!ctx) return;
 
         let animationFrameId: number;
-        let time = 0;
-        
-        // Data points for the EKG line
-        const dataPoints: number[] = [];
         
         // Resize handler
         const resize = () => {
@@ -32,45 +38,68 @@ export function LiveHeartbeat({ cpuLoad = 0 }: { cpuLoad?: number }) {
         window.addEventListener('resize', resize);
         resize();
 
-        // EKG Generation Logic
-        const generatePoint = (t: number) => {
-            // Base simulated noise
-            let val = Math.sin(t * 0.05) * 5 + (Math.random() - 0.5) * 2;
-            
-            // Dynamic Heart Rate based on CPU
-            // CPU 0 -> 100 frames interval
-            // CPU 100 -> 40 frames interval
-            const beatInterval = 100 - (cpuRef.current * 0.5); 
-            
-            const positionInCycle = t % beatInterval;
-            
-            // Spike Logic
-            if (positionInCycle > beatInterval - 15 && positionInCycle < beatInterval - 10) { // Q
-                val -= 10;
-            } else if (positionInCycle >= beatInterval - 10 && positionInCycle < beatInterval - 5) { // R (Spike)
-                val += 60 * (1 - Math.abs(positionInCycle - (beatInterval - 7.5)) / 2.5);
-            } else if (positionInCycle >= beatInterval - 5 && positionInCycle < beatInterval) { // S
-                val -= 15;
+        const samplesPerSecond = 60;
+        const sampleStepMs = 1000 / samplesPerSecond;
+
+        const generateSample = (sampleIndex: number, bpm: number, amplitude: number) => {
+            const beatInterval = (samplesPerSecond * 60) / Math.max(40, bpm);
+            const pos = sampleIndex % beatInterval;
+            let val = Math.sin(sampleIndex * 0.03) * 2; // baseline undulation
+            const noiseScale = modeRef.current === 'degraded' ? 2.5 : 1.2;
+            val += (Math.random() - 0.5) * noiseScale; // sensor noise
+
+            const qStart = beatInterval * 0.70;
+            const qEnd = beatInterval * 0.73;
+            const rEnd = beatInterval * 0.76;
+            const sEnd = beatInterval * 0.80;
+            const tStart = beatInterval * 0.84;
+            const tEnd = beatInterval * 0.92;
+
+            if (pos > qStart && pos <= qEnd) {
+                val -= amplitude * 0.25;
+            } else if (pos > qEnd && pos <= rEnd) {
+                const rPeak = (qEnd + rEnd) / 2;
+                const rWidth = (rEnd - qEnd) / 2;
+                val += amplitude * (1 - Math.abs(pos - rPeak) / Math.max(rWidth, 1));
+            } else if (pos > rEnd && pos <= sEnd) {
+                val -= amplitude * 0.4;
+            } else if (pos > tStart && pos <= tEnd) {
+                const tPhase = (pos - tStart) / (tEnd - tStart);
+                val += Math.sin(tPhase * Math.PI) * amplitude * 0.15;
             }
+
             return val;
         };
 
         const render = () => {
-            // Speed factor: Higher CPU = Faster scroll
-            // 1.0 base speed, up to 2.0 at max load
-            const speed = 1 + (cpuRef.current / 100);
-            time += speed;
-            
-            // Add new point
-            const newData = generatePoint(time);
-            dataPoints.push(newData);
-            if (dataPoints.length > canvas.width / 2) { 
-                dataPoints.shift();
+            const now = performance.now();
+            if (lastFrameRef.current === null) {
+                lastFrameRef.current = now;
+            }
+            const delta = now - lastFrameRef.current;
+            lastFrameRef.current = now;
+
+            const cpu = Math.max(0, Math.min(100, cpuRef.current));
+            const bpm = modeRef.current === 'offline' ? 0 : (55 + cpu * 0.6); // 55-115 bpm range
+            const amplitude = Math.min(canvas.height * 0.35, 18 + cpu * 0.5);
+
+            const samplesToAdd = Math.max(1, Math.floor(delta / sampleStepMs));
+            const history = historyRef.current;
+            const maxPoints = Math.max(140, Math.floor(canvas.width / 2));
+
+            for (let i = 0; i < samplesToAdd; i++) {
+                timeRef.current += 1;
+                if (modeRef.current === 'offline') {
+                    history.push(0);
+                } else {
+                    history.push(generateSample(timeRef.current, bpm, amplitude));
+                }
+                if (history.length > maxPoints) history.shift();
             }
 
             // Clear
-            ctx.fillStyle = 'rgba(0, 5, 2, 0.9)'; 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(0, 5, 2, 0.9)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Draw Grid
             ctx.strokeStyle = 'rgba(16, 185, 129, 0.05)';
@@ -89,33 +118,37 @@ export function LiveHeartbeat({ cpuLoad = 0 }: { cpuLoad?: number }) {
             ctx.stroke();
 
             // Draw EKG Line
-            const centerY = canvas.height / 2;
+            const stepX = canvas.width / (history.length - 1 || 1);
+            
             ctx.beginPath();
-            
-            // Color shifts to Amber if load > 80
-            ctx.strokeStyle = cpuRef.current > 80 ? '#fbbf24' : '#34d399';
-            
+            // Color shifts based on CPU load
+            const stroke = modeRef.current === 'offline' ? '#ef4444' : (cpu > 80 ? '#fbbf24' : '#34d399');
+            ctx.strokeStyle = stroke;
             ctx.lineWidth = 2;
             ctx.lineJoin = 'round';
             ctx.shadowBlur = 4;
-            ctx.shadowColor = cpuRef.current > 80 ? '#fbbf24' : '#34d399';
+            ctx.shadowColor = stroke;
 
-            for (let i = 0; i < dataPoints.length; i++) {
-                const x = i * 2; 
-                const y = centerY - dataPoints[i];
+            for (let i = 0; i < history.length; i++) {
+                const x = i * stepX;
+                const val = history[i];
+                const centerY = canvas.height / 2;
+                const y = centerY - val;
+
                 if (i === 0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
             }
             ctx.stroke();
-            
-            // Draw Reading Dot
-            if (dataPoints.length > 0) {
-                const lastX = (dataPoints.length - 1) * 2;
-                const lastY = centerY - dataPoints[dataPoints.length - 1];
+
+            // Draw Reading Dot (Current Head)
+            if (history.length > 0) {
+                const lastX = (history.length - 1) * stepX;
+                const centerY = canvas.height / 2;
+                const lastY = centerY - history[history.length - 1];
                 
                 ctx.fillStyle = '#ffffff';
                 ctx.beginPath();
-                ctx.arc(lastX, lastY, 2, 0, Math.PI * 2);
+                ctx.arc(lastX, lastY, 3, 0, Math.PI * 2);
                 ctx.fill();
             }
 

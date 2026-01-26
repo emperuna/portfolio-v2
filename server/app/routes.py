@@ -41,3 +41,18 @@ def get_meta():
         "uptime_seconds": uptime_seconds,
         "cold_start": cold_start
     })
+
+@api_bp.route('/config')
+def get_config():
+    """
+    Returns the current configuration state of the system.
+    Used by the frontend to display active settings (like Traffic Level) in the UI.
+    Read-only.
+    """
+    return jsonify({
+        "config": {
+            "debug_mode": current_app.config.get('CONFIG_DEBUG_MODE'),
+            "traffic_level": current_app.config.get('CONFIG_TRAFFIC_LEVEL'),
+            "sim_mode": current_app.config.get('CONFIG_SIM_MODE')
+        }
+    })
