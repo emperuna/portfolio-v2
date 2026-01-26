@@ -19,15 +19,20 @@ def test_get_status_structure(client):
     response = client.get('/api/status')
     assert response.status_code == 200
     data = response.json
-    assert data['status'] == 'operational'
+    assert data['status'] in {'healthy', 'degraded', 'offline'}
     assert 'system' in data
     assert 'cpu' in data['system']
     assert 'memory' in data['system']
     assert 'uptime_seconds' in data['system']
     
-    # Verify ranges based on SimulationService logic
-    assert 5 <= data['system']['cpu'] <= 45
-    assert 30 <= data['system']['memory'] <= 60
+    if data['status'] == 'offline':
+        assert data['system']['cpu'] == 0
+        assert data['system']['memory'] == 0
+    else:
+        # Verify ranges based on SimulationService logic
+        app_config = client.application.config
+        assert app_config['SIM_CPU_MIN'] <= data['system']['cpu'] <= app_config['SIM_CPU_MAX']
+        assert app_config['SIM_MEM_MIN'] <= data['system']['memory'] <= app_config['SIM_MEM_MAX']
 
 def test_get_meta(client):
     """Test that /api/meta returns version info."""
@@ -36,3 +41,6 @@ def test_get_meta(client):
     data = response.json
     assert 'version' in data
     assert 'environment' in data
+    assert 'build_time' in data
+    assert 'uptime_seconds' in data
+    assert 'cold_start' in data
