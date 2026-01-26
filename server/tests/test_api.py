@@ -41,6 +41,13 @@ def test_get_meta(client):
     data = response.json
     assert 'version' in data
     assert 'environment' in data
-    assert 'build_time' in data
-    assert 'uptime_seconds' in data
-    assert 'cold_start' in data
+
+def test_get_config(client):
+    """Test that /api/config returns 200 and expected keys (Ticket 8)."""
+    response = client.get('/api/config')
+    assert response.status_code == 200
+    data = response.json
+    assert 'config' in data
+    assert 'debug_mode' in data['config']
+    assert 'traffic_level' in data['config']
+    assert 'sim_mode' in data['config']

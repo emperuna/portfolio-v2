@@ -5,9 +5,10 @@ class SimulationService:
     @staticmethod
     def get_system_metrics(config, uptime_seconds):
         """
-        Generates simulated system metrics.
-        Returns:
-            dict: containing cpu, memory, uptime_seconds, and status
+        Generates simulated system metrics (CPU, Memory, Status) based on configuration.
+        
+        Uses a time-bucket approach to ensure metrics are stable for a short period (default 30s)
+        rather than jumping randomly on every refresh. This creates a realistic "monitoring" feel.
         """
         bucket_seconds = max(int(config.get('SIM_BUCKET_SECONDS', 30)), 1)
         bucket = int(time.time() // bucket_seconds)

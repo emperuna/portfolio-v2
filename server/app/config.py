@@ -2,6 +2,12 @@ import os
 
 
 class Config:
+    """
+    Central configuration for the application.
+    Manages simulation parameters (CPU/Memory ranges, failure rates) and layout settings.
+    Most values can be overridden via environment variables for testing or specific deployment scenarios.
+    """
+
     CORS_ORIGINS = os.environ.get('CORS_ORIGINS', '*')
 
     SIM_BUCKET_SECONDS = int(os.environ.get('SIM_BUCKET_SECONDS', '30'))
@@ -19,3 +25,10 @@ class Config:
     APP_VERSION = os.environ.get('APP_VERSION', '1.0.0')
     BUILD_TIME = os.environ.get('APP_BUILD_TIME') or os.environ.get('BUILD_TIME') or 'unknown'
     COLD_START_SECONDS = int(os.environ.get('COLD_START_SECONDS', '60'))
+
+    # Visual/Simulation Tweaks
+    # These control the "live" feel of the system (traffic intensity, simulation mode).
+    # Exposed via /api/config for the frontend deployment panel.
+    CONFIG_DEBUG_MODE = os.environ.get('CONFIG_DEBUG_MODE', 'false').lower() == 'true'
+    CONFIG_TRAFFIC_LEVEL = os.environ.get('CONFIG_TRAFFIC_LEVEL', 'low')
+    CONFIG_SIM_MODE = os.environ.get('CONFIG_SIM_MODE', 'standard')
