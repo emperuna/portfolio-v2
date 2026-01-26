@@ -1,3 +1,4 @@
+import type { SystemMeta } from '@domain/entities/SystemMeta';
 import { useEffect, useRef, useState } from 'react';
 
 interface LogEntry {
@@ -8,12 +9,25 @@ interface LogEntry {
     source: string;
 }
 
-export function IncidentLog() {
+interface IncidentLogProps {
+    status: {
+        status: string;
+        cpu: number;
+        memory: number;
+    };
+    meta?: SystemMeta | null;
+    config?: {
+        sim_mode: string;
+        traffic_level: string;
+        debug_mode: boolean;
+    };
+}
+
+export function IncidentLog({ status, config, meta }: IncidentLogProps) {
     const scrollRef = useRef<HTMLDivElement>(null);
     const [logs, setLogs] = useState<LogEntry[]>([
         { id: 1, timestamp: new Date().toLocaleTimeString(), level: 'INFO', message: "System Initialized", source: "KERNEL" },
         { id: 2, timestamp: new Date().toLocaleTimeString(), level: 'SUCCESS', message: "Connected to Satellite Uplink", source: "NET" },
-        { id: 3, timestamp: new Date().toLocaleTimeString(), level: 'INFO', message: "Monitoring Services Active", source: "WIDGET" },
     ]);
 
     // Auto-scroll
@@ -23,35 +37,68 @@ export function IncidentLog() {
         }
     }, [logs]);
 
-    // Random log generation
+    // React to Status Changes (Real Data Events)
     useEffect(() => {
-        const messages = [
-            { level: 'INFO', msg: "Health check routine verified", src: "HEALTH" },
-            { level: 'INFO', msg: "Packet sequence acknowledged", src: "TCP/IP" },
-            { level: 'WARN', msg: "Latency spike detected (24ms)", src: "M-3" },
-            { level: 'SUCCESS', msg: "Cache invalidated", src: "REDIS" },
-            { level: 'INFO', msg: "User session heartbeat", src: "AUTH" },
-            { level: 'INFO', msg: "Render cycle completed", src: "GPU" },
-        ];
+        const addLog = (level: LogEntry['level'], message: string, source: string) => {
+            const newLog = {
+                id: Date.now(),
+                timestamp: new Date().toLocaleTimeString(),
+                level,
+                message,
+                source
+            };
+            setLogs(prev => [...prev.slice(-19), newLog]);
+        };
 
-        const interval = setInterval(() => {
-            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
-            const time = new Date().toLocaleTimeString();
-            
-            setLogs(prev => {
-                const newLog = { 
-                    id: Date.now(), 
-                    timestamp: time, 
-                    level: randomMsg.level as any, 
-                    message: randomMsg.msg, 
-                    source: randomMsg.src 
-                };
-                return [...prev.slice(-19), newLog]; // Keep last 20
-            });
-        }, 3000);
+        // Event: High CPU
+        if (status.cpu > 80) {
+            addLog('WARN', `High CPU Load Detected (${status.cpu}%)`, 'CPU');
+        }
 
-        return () => clearInterval(interval);
-    }, []);
+        // Event: Status Change
+        if (status.status !== 'healthy') {
+            addLog('ERROR', `System Status: ${status.status.toUpperCase()}`, 'HEALTH');
+        }
+
+    }, [status.status, Math.floor(status.cpu / 10)]); // Debounce CPU logs by 10% buckets
+
+    // React to Config Changes (Control Plane Events)
+    useEffect(() => {
+        if (!config) return;
+        const addLog = (level: LogEntry['level'], message: string, source: string) => {
+            setLogs(prev => [...prev.slice(-19), {
+                id: Date.now(),
+                timestamp: new Date().toLocaleTimeString(),
+                level,
+                message,
+                source
+            }]);
+        };
+
+        addLog('INFO', `Traffic Level set to ${config.traffic_level.toUpperCase()}`, 'CONFIG');
+        addLog('INFO', `Simulation Mode: ${config.sim_mode.toUpperCase()}`, 'CONFIG');
+    }, [config?.traffic_level, config?.sim_mode]);
+
+    // React to System Meta (Topology Events)
+    useEffect(() => {
+        if (!meta) return;
+        const addLog = (level: LogEntry['level'], message: string, source: string) => {
+            setLogs(prev => [...prev.slice(-19), {
+                id: Date.now(),
+                timestamp: new Date().toLocaleTimeString(),
+                level,
+                message,
+                source
+            }]);
+        };
+
+        if (meta.commit) {
+            addLog('SUCCESS', `GitHub API Linked (Commit: ${meta.commit})`, 'GITHUB');
+        }
+        if (meta.environment) {
+            addLog('INFO', `Edge Network Active [${meta.environment.toUpperCase()}]`, 'EDGE');
+        }
+    }, [meta?.commit, meta?.environment]);
 
     const getLevelColor = (level: string) => {
         switch(level) {
@@ -65,11 +112,11 @@ export function IncidentLog() {
     return (
         <div ref={scrollRef} className="absolute inset-0 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 p-2 space-y-1">
             {logs.map(log => (
-                <div key={log.id} className="flex space-x-2 border-l border-primary/10 pl-2 hover:bg-white/5 transition-colors">
-                    <span className="text-primary/30 min-w-[60px]">{log.timestamp}</span>
-                    <span className={`min-w-[50px] font-bold ${getLevelColor(log.level)}`}>{log.level}</span>
-                    <span className="text-primary/50">[{log.source}]</span>
-                    <span className="text-primary/90">{log.message}</span>
+                <div key={log.id} className="flex items-baseline space-x-3 border-l border-primary/10 pl-2 hover:bg-white/5 transition-colors text-[10px] sm:text-xs">
+                    <span className="text-primary/30 w-[60px] shrink-0 font-mono">{log.timestamp}</span>
+                    <span className={`w-[60px] shrink-0 font-bold font-mono ${getLevelColor(log.level)}`}>{log.level}</span>
+                    <span className="text-primary/50 w-[80px] shrink-0 font-mono text-right pr-2">[{log.source}]</span>
+                    <span className="text-primary/90 flex-1 font-mono break-words">{log.message}</span>
                 </div>
             ))}
             {/* Blinking cursor at bottom */}

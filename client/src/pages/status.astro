@@ -1,6 +1,7 @@
 ---
 import CreativeLayout from '../layouts/CreativeLayout.astro';
 import { MissionControl } from '../presentation/features/status/MissionControl';
+import { ControlPlane } from '../presentation/features/control-plane/ControlPlane';
 
 // Example reuse of existing components for Status page
 ---
@@ -13,5 +14,6 @@ import { MissionControl } from '../presentation/features/status/MissionControl';
     <div class="relative z-10 container mx-auto px-4 pt-24 h-[calc(100vh-100px)] flex flex-col justify-center">
 
         <MissionControl client:load />
+        <ControlPlane client:idle />
     </div>
 </CreativeLayout>

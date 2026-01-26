@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSystemStatus } from '@application/hooks';
+import { useSystemStatus } from '@application/hooks/useSystemStatus';
+import { useSystemConfig } from '@application/hooks/useSystemConfig';
+import { useSystemMeta } from '@application/hooks/useSystemMeta';
 import { LiveHeartbeat } from './LiveHeartbeat';
 import { ServiceMesh } from './ServiceMesh';
 import { IncidentLog } from './IncidentLog';
@@ -8,8 +10,10 @@ import { ControlPanel } from './ControlPanel';
 
 export function MissionControl() {
     const status = useSystemStatus();
-    const [debugMode, setDebugMode] = useState(false);
-    const [trafficLevel, setTrafficLevel] = useState<'low' | 'high'>('low');
+    const { meta } = useSystemMeta();
+    const { config, setDebugMode: setGlobalDebug, setTrafficLevel: setGlobalTraffic } = useSystemConfig(); // Use global config
+    const [debugMode, setDebugMode] = useState(false); // Local debug view toggle (kept for view switching)
+    // const [trafficLevel, setTrafficLevel] = useState<'low' | 'high'>('low'); // Removed local state, use global config
 
     return (
         <motion.div 
@@ -52,7 +56,7 @@ export function MissionControl() {
                                 Core_Heartbeat_Monitor
                             </h3>
                         </div>
-                        <LiveHeartbeat cpuLoad={status.cpu} />
+                        <LiveHeartbeat cpuLoad={status.cpu} systemStatus={status.status} />
                         
                         {/* Technical Grid Overlay */}
                         <div className="absolute inset-0 pointer-events-none opacity-20" 
@@ -68,7 +72,7 @@ export function MissionControl() {
                             </h3>
                         </div>
                         <div className="w-full h-full p-4">
-                            <ServiceMesh trafficLevel={trafficLevel} />
+                            <ServiceMesh trafficLevel={config.traffic_level} />
                         </div>
                     </div>
                 </div>
@@ -94,7 +98,7 @@ export function MissionControl() {
                                     className="absolute inset-0 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 bg-black/50"
                                 >
                                     <pre className="text-[10px] font-mono text-primary/70 whitespace-pre-wrap">
-                                        {JSON.stringify({ ...status, trafficLevel, timestamp: new Date().toISOString() }, null, 2)}
+                                        {JSON.stringify({ ...status, config, timestamp: new Date().toISOString() }, null, 2)}
                                     </pre>
                                 </motion.div>
                             ) : (
@@ -105,7 +109,7 @@ export function MissionControl() {
                                     exit={{ opacity: 0, x: -20 }}
                                     className="absolute inset-0"
                                 >
-                                    <IncidentLog />
+                                    <IncidentLog status={status} config={config} meta={meta} />
                                 </motion.div>
                             )}
                         </AnimatePresence>
@@ -115,11 +119,10 @@ export function MissionControl() {
                     <ControlPanel 
                         debugMode={debugMode} 
                         setDebugMode={setDebugMode}
-                        trafficLevel={trafficLevel}
-                        setTrafficLevel={setTrafficLevel}
+                        trafficLevel={config.traffic_level}
+                        setTrafficLevel={setGlobalTraffic}
                     />
                 </div>
-
             </div>
         </motion.div>
     );
