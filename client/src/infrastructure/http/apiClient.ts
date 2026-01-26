@@ -1,7 +1,7 @@
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000';
+import { getApiBaseUrl } from '../env/publicEnv';
 
 export async function fetchAPI(endpoint: string, options: RequestInit = {}) {
-  const url = `${API_URL}${endpoint}`;
+  const url = `${getApiBaseUrl()}${endpoint}`;
   
   const defaultHeaders = {
     'Content-Type': 'application/json',
