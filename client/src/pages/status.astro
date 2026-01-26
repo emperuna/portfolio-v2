@@ -1,0 +1,17 @@
+---
+import CreativeLayout from '../layouts/CreativeLayout.astro';
+import { MissionControl } from '../presentation/features/status/MissionControl';
+
+// Example reuse of existing components for Status page
+---
+
+<CreativeLayout title="System Status | Portfolio v2">
+    <div class="fixed inset-0 z-0 bg-[#0a0a0a]">
+        <div class="absolute inset-0 bg-[linear-gradient(rgba(18,18,18,0)_2px,transparent_2px),linear-gradient(90deg,rgba(18,18,18,0)_2px,transparent_2px)] bg-[size:30px_30px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_0%,#000_70%,transparent_100%)] opacity-20"></div>
+    </div>
+
+    <div class="relative z-10 container mx-auto px-4 pt-24 h-[calc(100vh-100px)] flex flex-col justify-center">
+
+        <MissionControl client:load />
+    </div>
+</CreativeLayout>
