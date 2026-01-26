@@ -1,0 +1,66 @@
+---
+import CreativeLayout from '../layouts/CreativeLayout.astro';
+import { ArtifactRegistry } from '../presentation/components/creative/ArtifactRegistry';
+import { HeroBackground } from '../presentation/features/hero/components/HeroBackground';
+
+const projects = [
+  {
+    title: "Portfolio v2",
+    description: "The current website you are viewing. A digital twin concept built with Astro, React, and advanced motion graphics.",
+    status: "live",
+    tech: ["Astro", "React", "Framer Motion", "Tailwind"],
+    repoUrl: "#"
+  },
+  {
+    title: "Cloud Orchestrator",
+    description: "A Kubernetes operator for managing ephemeral development environments. Reduces infra costs by 40%.",
+    status: "developing",
+    tech: ["Go", "Kubernetes", "Docker", "gRPC"],
+    repoUrl: "#"
+  },
+  {
+    title: "Legacy Systems",
+    description: "Old monolithic architecture from 2021. Maintained for archival purposes.",
+    status: "archived",
+    tech: ["PHP", "Laravel", "MySQL"],
+    repoUrl: "#"
+  },
+  {
+    title: "AI Agent Swarm",
+    description: "Experimental multi-agent system for automated code review and refactoring.",
+    status: "developing",
+    tech: ["Python", "LangChain", "OpenAI", "Redis"],
+    repoUrl: "#"
+  },
+  {
+    title: "Payment Gateway",
+    description: "High-throughput payment processing service handling 10k tps.",
+    status: "maintenance",
+    tech: ["Rust", "PostgreSQL", "Kafka"],
+    repoUrl: "#"
+  }
+] as const;
+---
+
+<CreativeLayout title="Modules | Portfolio v2">
+    {/* Optional: We can reuse HeroBackground but maybe dim it or change it? 
+        Let's keep it consistent for the cockpit feel but maybe simpler? 
+        For now, reusing it is fine, but we might want it fixed/shared in layout. 
+        Since it's in a page, it will re-mount. With ViewTransitions, if we put it in Layout with transition:persist, 
+        it would stay. But user didn't ask for that yet. I'll put it here.
+    */}
+    <div class="fixed inset-0 z-0">
+        <HeroBackground client:load /> 
+    </div>
+
+    <div class="relative z-10 container mx-auto px-4 pt-32 pb-20">
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-white mb-2">Artifact Registry</h1>
+            <p class="text-text-muted font-mono text-sm max-w-xl">
+                > LISTING ALL DEPLOYED MICROSERVICES AND PROJECTS.
+            </p>
+        </div>
+
+        <ArtifactRegistry client:load />
+    </div>
+</CreativeLayout>

@@ -1,10 +1,7 @@
 import { atom } from 'nanostores';
-
-export type SystemStatus = {
-  cpu: number;
-  memory: number;
-  status: 'healthy' | 'degraded' | 'offline';
-};
+import type { SystemStatus } from '@domain';
+import { normalizeSystemHealth } from '@domain';
+import { getSystemStatus } from '@infrastructure/api/systemApi';
 
 export const $systemStatus = atom<SystemStatus>({
   cpu: 0,
@@ -13,22 +10,28 @@ export const $systemStatus = atom<SystemStatus>({
 });
 
 let intervalId: ReturnType<typeof setInterval> | null = null;
+let subscriberCount = 0;
 
 export function initSystemMonitor() {
-  if (intervalId) return;
-
-  const apiUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000';
+  subscriberCount += 1;
+  if (intervalId) {
+    return () => {
+      subscriberCount = Math.max(0, subscriberCount - 1);
+      if (subscriberCount === 0 && intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    };
+  }
 
   const fetchStatus = async () => {
     try {
-      const response = await fetch(`${apiUrl}/api/status`);
-      if (!response.ok) throw new Error('Network response was not ok');
-      const data = await response.json();
-      
+      const data = await getSystemStatus();
+
       $systemStatus.set({
         cpu: data.system?.cpu || 0,
         memory: data.system?.memory || 0,
-        status: 'healthy',
+        status: normalizeSystemHealth(data.status),
       });
     } catch (error) {
       console.error('Failed to fetch system status:', error);
@@ -44,14 +47,17 @@ export function initSystemMonitor() {
   // Initial fetch
   fetchStatus();
 
-  // Poll every 2 seconds
-  intervalId = setInterval(fetchStatus, 2000);
+  // Poll every 1 second
+  intervalId = setInterval(fetchStatus, 1000);
 
   // Return cleanup function
   return () => {
+    subscriberCount = Math.max(0, subscriberCount - 1);
     if (intervalId) {
-      clearInterval(intervalId);
-      intervalId = null;
+      if (subscriberCount === 0) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
     }
   };
 }

@@ -1,11 +1,16 @@
 ---
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
   title?: string;
 }
 
 const { title = "Portfolio v2 | Digital Twin" } = Astro.props;
+const currentPath = Astro.url.pathname;
+
+const activeClass = "bg-white/10 text-white";
+const inactiveClass = "text-text-muted hover:text-white";
 ---
 
 <!doctype html>
@@ -19,20 +24,36 @@ const { title = "Portfolio v2 | Digital Twin" } = Astro.props;
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <ClientRouter />
   </head>
   <body class="min-h-screen font-sans text-text-primary antialiased selection:bg-primary/30 selection:text-white pb-10">
     
     {/* Floating Navigation */}
     <nav class="fixed top-6 left-1/2 z-50 -translate-x-1/2">
       <div class="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1.5 px-3 backdrop-blur-xl shadow-2xl">
-        <a href="/" class="rounded-full bg-white/10 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/20">
+        <a 
+          href="/" 
+          class={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${currentPath === "/" ? activeClass : inactiveClass}`}
+        >
           SYSTEM
         </a>
-        <a href="#projects" class="rounded-full px-4 py-1.5 text-xs font-medium text-text-muted hover:text-white transition-colors">
+        <a 
+          href="/projects" 
+          class={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${currentPath === "/projects" ? activeClass : inactiveClass}`}
+        >
           MODULES
         </a>
-        <a href="#about" class="rounded-full px-4 py-1.5 text-xs font-medium text-text-muted hover:text-white transition-colors">
+        <a 
+          href="/about" 
+          class={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${currentPath === "/about" ? activeClass : inactiveClass}`}
+        >
           LOGS
+        </a>
+        <a 
+          href="/status" 
+          class={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${currentPath === "/status" ? activeClass : inactiveClass}`}
+        >
+          STATUS
         </a>
       </div>
     </nav>

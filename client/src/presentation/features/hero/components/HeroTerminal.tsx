@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../../shared/utils';
 import { TypewriterLog } from './TypewriterLog';
 
 interface LogEntry {

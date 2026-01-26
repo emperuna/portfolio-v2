@@ -1,14 +1,13 @@
 import { twMerge } from 'tailwind-merge';
 import { clsx, type ClassValue } from 'clsx';
+import type { DisplayStatus } from '@domain';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export type StatusType = 'operational' | 'degraded' | 'outage' | 'cold-start';
-
 interface StatusPillProps {
-  status: StatusType;
+  status: DisplayStatus;
   className?: string;
   showLabel?: boolean;
 }

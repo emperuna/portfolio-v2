@@ -8,13 +8,14 @@ api_bp = Blueprint('api', __name__)
 
 @api_bp.route('/status')
 def get_status():
-    # Simulated Chaos: Occasionally add delay
-    if random.random() < 0.1:
+    # Simulated latency spikes (configurable)
+    if random.random() < current_app.config.get('SIM_LATENCY_CHANCE', 0.1):
         current_app.logger.info("Simulating latency spike")
-        time.sleep(0.5)
+        time.sleep(current_app.config.get('SIM_LATENCY_MS', 500) / 1000)
 
     from .services.simulation_service import SimulationService
-    return jsonify(SimulationService.get_system_metrics())
+    uptime_seconds = int(time.time() - current_app.config.get('START_TIME', time.time()))
+    return jsonify(SimulationService.get_system_metrics(current_app.config, uptime_seconds))
 
 @api_bp.route('/meta')
 def get_meta():
@@ -29,8 +30,14 @@ def get_meta():
     except FileNotFoundError:
         current_app.logger.warning("Git not found in PATH")
 
+    uptime_seconds = int(time.time() - current_app.config.get('START_TIME', time.time()))
+    cold_start = uptime_seconds < current_app.config.get('COLD_START_SECONDS', 60)
+
     return jsonify({
-        "version": os.environ.get("APP_VERSION", "1.0.0"),
+        "version": current_app.config.get("APP_VERSION", "1.0.0"),
         "commit": commit_hash,
-        "environment": "production" if os.environ.get('RENDER') else "development"
+        "environment": "production" if os.environ.get('RENDER') else "development",
+        "build_time": current_app.config.get("BUILD_TIME", "unknown"),
+        "uptime_seconds": uptime_seconds,
+        "cold_start": cold_start
     })
