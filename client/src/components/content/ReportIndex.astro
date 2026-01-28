@@ -9,7 +9,7 @@ const { headings } = Astro.props;
 const indexItems = headings.filter(h => h.depth >= 2 && h.depth <= 3);
 ---
 
-<nav class="hidden lg:block w-full h-fit pl-8 border-l border-white/5 font-mono text-xs">
+<nav class="report-index-nav hidden lg:block w-full h-fit pl-8 border-l border-white/5 font-mono text-xs">
     <div class="text-white/30 uppercase tracking-[0.2em] mb-6 text-[10px] select-none">
         Report Index //
     </div>
@@ -47,7 +47,8 @@ const indexItems = headings.filter(h => h.depth >= 2 && h.depth <= 3);
     // Robust Scroll Spy Logic
     const initScrollSpy = () => {
         const headers = Array.from(document.querySelectorAll('article h2, article h3'));
-        const navLinks = Array.from(document.querySelectorAll('nav a'));
+        // Scope to only Report Index links
+        const navLinks = Array.from(document.querySelectorAll('.report-index-nav a'));
         
         const onScroll = () => {
             let currentId = '';
