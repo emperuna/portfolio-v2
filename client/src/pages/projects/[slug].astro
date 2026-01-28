@@ -1,0 +1,186 @@
+---
+import { getCollection } from 'astro:content';
+import CreativeLayout from '../../layouts/CreativeLayout.astro';
+import ReportIndex from '../../components/content/ReportIndex.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map(entry => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await entry.render();
+
+// Helper to format dates
+const formatDate = (d: string | Date | undefined) => {
+    if (!d) return 'ONGOING';
+    return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).toUpperCase();
+};
+
+const getImpactColor = (level: string) => {
+    switch(level) {
+        case 'CRITICAL': return 'text-red-500 border-red-500/30 bg-red-500/10';
+        case 'HIGH': return 'text-orange-500 border-orange-500/30 bg-orange-500/10';
+        default: return 'text-emerald-500 border-emerald-500/30 bg-emerald-500/10';
+    }
+};
+---
+
+<CreativeLayout title={`INCIDENT: ${entry.data.incident_id}`}>
+    <div class="min-h-screen pt-24 pb-24 px-4 bg-[#050505] relative font-mono text-sm group-print:bg-white group-print:text-black">
+        
+        {/* Background Texture */}
+        <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: repeating-linear-gradient(0deg, transparent, transparent 19px, #fff 20px), repeating-linear-gradient(90deg, transparent, transparent 19px, #fff 20px);"></div>
+
+        {/* DOCUMENT CONTAINER */}
+        <div class="max-w-6xl mx-auto relative z-10">
+            
+            {/* BACK LINK */}
+            <a href="/projects" class="inline-flex items-center text-[10px] text-primary/50 hover:text-primary mb-8 tracking-widest uppercase transition-colors">
+                ← Return to Registry
+            </a>
+
+            {/* PAPER SHEET */}
+            <div class="bg-[#08080a] border border-white/10 relative p-8 md:p-12 lg:p-16 shadow-2xl">
+                
+                {/* CLASSIFICATION BANNER */}
+                <div class="absolute top-0 inset-x-0 h-8 flex items-center justify-center bg-white/5 border-b border-white/5 text-[10px] tracking-[0.3em] font-bold text-white/30 select-none overflow-hidden">
+                    CLASSIFIED // EYES ONLY
+                </div>
+                
+                <div class="absolute bottom-0 inset-x-0 h-8 flex items-center justify-center bg-white/5 border-t border-white/5 text-[10px] tracking-[0.3em] font-bold text-white/30 select-none overflow-hidden">
+                    CLASSIFIED // EYES ONLY
+                </div>
+
+                {/* WATERMARK */}
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.02] select-none overflow-hidden">
+                    <div class="text-[15vw] font-bold text-white transform -rotate-45 whitespace-nowrap tracking-tighter">
+                        {entry.data.impact_level}
+                    </div>
+                </div>
+
+                {/* HEADER SECTION */}
+                <header class="border-b-2 border-white/10 pb-8 mb-12 relative mt-8">
+                     {/* STAMP */}
+                    <div class={`absolute top-0 right-0 border-[3px] rounded-sm p-4 transform rotate-[-12deg] mix-blend-screen opacity-90 text-center select-none pointer-events-none ${getImpactColor(entry.data.impact_level)}`} style="mask-image: url('/assets/grunge-mask.svg'); -webkit-mask-image: url('/assets/grunge-mask.svg');">
+                        <div class="text-xs tracking-[0.25em] font-bold uppercase">{entry.data.status}</div>
+                        <div class="text-[8px] opacity-70 mt-1">AUTH: SYS_ADMIN</div>
+                    </div>
+
+                    <div class="flex flex-col gap-2 mb-6 text-xs text-primary/50 tracking-widest">
+                        <div class="flex items-center gap-3">
+                            <span>REPORT_ID:</span>
+                            <span class="text-white">{entry.data.incident_id}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span>DATE:</span>
+                            <span class="text-white">{formatDate(entry.data.timeline.start)}</span>
+                        </div>
+                    </div>
+
+                    <h1 class="text-3xl md:text-5xl font-bold font-display tracking-tight text-white mb-6 uppercase">
+                        {entry.data.title}
+                    </h1>
+
+                    <div class="p-4 border-l-2 border-primary/20 bg-primary/5 max-w-2xl">
+                        <span class="block text-[10px] text-primary/40 tracking-widest mb-1">ROOT CAUSE ANALYSIS:</span>
+                        <p class="text-lg font-light text-primary/90 leading-relaxed font-sans">
+                             {entry.data.root_cause}
+                        </p>
+                    </div>
+                </header>
+
+                {/* METADATA GRID */}
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16 font-mono text-xs relative z-10">
+                    <div>
+                        <div class="text-white/30 uppercase tracking-[0.2em] mb-4 text-[10px] border-b border-white/5 pb-2">AFFECTED_SYSTEMS</div>
+                        <ul class="space-y-2">
+                            {entry.data.affected_systems.map(sys => (
+                                <li class="text-primary/90 flex items-start">
+                                    <span class="text-primary/30 mr-3 shrink-0">::</span>
+                                    {sys}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="text-white/30 uppercase tracking-[0.2em] mb-4 text-[10px] border-b border-white/5 pb-2">TIMELINE</div>
+                        <div class="space-y-2 text-primary/90">
+                            <div class="flex justify-between">
+                                <span class="text-primary/50">DETECTED:</span>
+                                <span>{formatDate(entry.data.timeline.start)}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-primary/50">RESOLVED:</span>
+                                <span>{formatDate(entry.data.timeline.end)}</span>
+                            </div>
+                            <div class="flex justify-between mt-4 pt-2 border-t border-white/5">
+                                <span class="text-primary/50">DURATION:</span>
+                                <span>13 DAYS</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-white/30 uppercase tracking-[0.2em] mb-4 text-[10px] border-b border-white/5 pb-2">METADATA</div>
+                        <div class="space-y-2 text-primary/90">
+                            <div class="flex justify-between">
+                                <span class="text-primary/50">AUTHOR:</span>
+                                <span>SYSTEM_ADMIN</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-primary/50">VERSION:</span>
+                                <span>2.0.0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-primary/50">CLEARANCE:</span>
+                                <span>L3</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* CONTENT GRID (Content + Index) */}
+                <div class="grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-12 relative z-10">
+                    
+                    {/* MAIN CONTENT AREA */}
+                    <article class="prose prose-invert max-w-none min-w-0
+                        prose-headings:font-bold prose-headings:font-mono prose-headings:uppercase prose-headings:tracking-[0.2em] prose-headings:text-white prose-headings:border-b prose-headings:border-white/10 prose-headings:pb-4 prose-headings:mt-12 prose-headings:mb-6
+                        prose-h1:text-xl prose-h2:text-lg prose-h3:text-base prose-h4:text-sm
+                        prose-p:text-gray-300 prose-p:leading-8 prose-p:font-light prose-p:font-sans prose-p:mb-6
+                        prose-strong:text-white prose-strong:font-bold prose-strong:font-mono
+                        prose-ul:list-none prose-ul:pl-0
+                        prose-li:flex prose-li:items-start prose-li:my-2 prose-li:text-gray-300 prose-li:leading-7
+                        prose-li:before:content-['>>'] prose-li:before:text-primary/50 prose-li:before:mr-3 prose-li:before:font-mono prose-li:before:text-xs prose-li:before:mt-1.5
+                        prose-ol:list-decimal prose-ol:pl-4 prose-ol:marker:text-primary/50 prose-ol:marker:font-mono
+                        prose-blockquote:border-l-2 prose-blockquote:border-primary/50 prose-blockquote:bg-white/5 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:not-italic prose-blockquote:text-white/80 prose-blockquote:my-8
+                        prose-code:font-mono prose-code:text-primary prose-code:bg-primary/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none prose-code:text-xs
+                        prose-pre:bg-[#030303] prose-pre:border prose-pre:border-white/10 prose-pre:p-4 prose-pre:rounded-none
+                        ">
+                        <Content />
+                    </article>
+
+                    {/* STICKY SIDEBAR */}
+                    <aside class="relative lg:sticky lg:top-32 h-fit self-start">
+                        <ReportIndex headings={headings} />
+                    </aside>
+                        
+                </div>
+
+                {/* FOOTER - Moved OUTSIDE the grid so side nav stops sticking before it */}
+                <div class="mt-24 pt-8 border-t-[3px] border-double border-white/10 text-center relative z-10 flex flex-col items-center gap-4">
+                    <div class="w-16 h-16 border border-white/20 rounded-full flex items-center justify-center grayscale opacity-50">
+                        <img src="/assets/signature.svg" alt="Signed" class="w-10 opacity-50" onError="this.style.display='none'" />
+                    </div>
+                    <div>
+                        <div class="text-[10px] text-white/30 font-mono tracking-[0.3em] uppercase">Authorized Signature</div>
+                        <div class="text-[8px] text-white/10 font-mono mt-1">{entry.id} // RENDER_COMPLETE // {new Date().getFullYear()}</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</CreativeLayout>

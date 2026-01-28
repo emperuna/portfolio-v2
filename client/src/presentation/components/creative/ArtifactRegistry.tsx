@@ -13,6 +13,7 @@ interface Project {
     tags: string[];
     description: string;
     repoUrl?: string;
+    reportUrl?: string; // New field for the Incident Report link
     details?: object;
 }
 
@@ -26,6 +27,7 @@ const SAMPLE_PROJECTS: Project[] = [
         size: "4.2MB",
         tags: ["astro", "react", "framer"],
         description: "Self-replicating portfolio instance with neural-link interface.",
+        reportUrl: "/projects/portfolio-v2",
         details: { architecture: "Island", rendering: "SSR", deployment: "Edge" }
     },
     {
@@ -201,9 +203,18 @@ export function ArtifactRegistry() {
                                 </pre>
                             </div>
 
-                            <button className="w-full py-2 bg-cyan-500/10 border border-cyan-500/50 text-cyan-400 rounded hover:bg-cyan-500/20 transition-all font-bold">
-                                $ PULL IMAGE
-                            </button>
+                            {selectedProject.reportUrl ? (
+                                <a 
+                                    href={selectedProject.reportUrl}
+                                    className="block w-full text-center py-2 bg-cyan-500/10 border border-cyan-500/50 text-cyan-400 rounded hover:bg-cyan-500/20 transition-all font-bold"
+                                >
+                                    $ VIEW_INCIDENT_REPORT
+                                </a>
+                            ) : (
+                                <button className="w-full py-2 bg-white/5 border border-white/10 text-white/50 rounded cursor-not-allowed font-bold">
+                                    $ REPORT_UNAVAILABLE
+                                </button>
+                            )}
                         </div>
                     </motion.div>
                 )}
