@@ -1,0 +1,96 @@
+---
+title: "System Upgrade: Portfolio V2"
+incident_id: "INC-2024-001"
+impact_level: "CRITICAL"
+status: "RESOLVED"
+root_cause: "Public-facing system no longer reflected the operator’s current engineering mindset and system-level thinking."
+resolution: "SHIPPED"
+affected_systems:
+  ["Frontend (Astro)", "Backend (Flask)", "System Visualization Layer"]
+timeline:
+  start: "2024-01-15"
+  end: "2024-01-28"
+description: "Intentional decommissioning of Portfolio V1 to realign public identity with evolving technical depth, architectural judgment, and operational perspective."
+image: "/assets/portfolio-v2-thumb.jpg"
+---
+
+import Exhibit from "../../components/content/Exhibit.astro";
+
+## 1.0 Executive Summary
+
+Portfolio V1 remained functionally stable but suffered from **representation drift**:  
+while the operator’s capabilities had evolved toward system design, infrastructure thinking, and operational awareness, the public interface continued to present a feature-centric narrative.
+
+<Exhibit
+  src="/assets/portfolio-v2-thumb.svg"
+  alt="System State Comparison"
+  caption="FIG 1.1: ARCHITECTURE VISUALIZATION"
+  type="SCHEMATIC"
+/>
+
+**Portfolio V2** was initiated as a corrective action to eliminate this mismatch.
+
+This upgrade prioritizes _how systems are thought about_, not merely _what they do_.
+
+## 2.0 Problem Statement
+
+The previous architecture optimized for implementation proof:
+
+- Feature completeness
+- UI correctness
+- Stack familiarity
+
+However, it failed to communicate:
+
+- Architectural boundaries
+- Trade-off awareness
+- Failure modeling
+- Observability-first thinking
+
+This created a false signal to external reviewers.
+
+## 3.0 Technical Architecture
+
+### 3.1 Frontend: Astro + React (Islands)
+
+Astro was selected to enforce clear separation between static representation and dynamic behavior.
+
+Interactive components are deliberately isolated and hydrated only when necessary, mirroring real-world cost-aware system design rather than defaulting to full client-side execution.
+
+### 3.2 Backend: Flask (Simulated Telemetry)
+
+A lightweight backend exposes system state and health indicators.
+
+While the data is simulated, the interfaces, contracts, and polling patterns reflect real operational systems — emphasizing correctness of _mental models_ over production scale.
+
+## 4.0 Key Capabilities Introduced
+
+- **Mission Control Interface**  
+  A centralized system status view designed to mirror how operators reason about live systems.
+
+- **Incident Log Narrative**  
+  Structured reporting used as a storytelling mechanism to communicate decision-making, not just outcomes.
+
+- **System Visualization Layer**  
+  Visual abstractions used to explain relationships, dependencies, and flow — not decorative animation.
+
+## 5.0 Outcome
+
+Portfolio V2 successfully repositions the operator from a feature-focused implementer to a system-oriented engineer.
+
+Latency is minimal.  
+Complexity is intentional.  
+The interface now reflects how the system is _thought about_, not merely how it is rendered.
+
+<Exhibit
+  src="/assets/portfolio-v2-thumb.svg"
+  alt="Mission Control Interface"
+  caption="FIG 5.0: MISSION CONTROL INTERFACE"
+  type="EVIDENCE"
+/>
+
+## 6.0 Closing Note
+
+This incident was not triggered by failure.
+
+It was triggered by growth.

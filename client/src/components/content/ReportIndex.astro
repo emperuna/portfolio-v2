@@ -1,0 +1,131 @@
+---
+interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { headings } = Astro.props;
+
+// Filter for H2 and H3 only
+const indexItems = headings.filter(h => h.depth >= 2 && h.depth <= 3);
+---
+
+<nav class="report-index-nav hidden lg:block w-full h-fit pl-8 border-l border-white/5 font-mono text-xs">
+    <div class="text-white/30 uppercase tracking-[0.2em] mb-6 text-[10px] select-none">
+        Report Index //
+    </div>
+    
+    <ul class="space-y-4">
+        {indexItems.map((h, i) => (
+            <li class={`
+                transition-colors duration-200
+                ${h.depth === 3 ? 'pl-4 border-l border-white/5' : ''}
+            `}>
+                <a 
+                    href={`#${h.slug}`} 
+                    class="block text-primary/40 hover:text-primary transition-colors group flex items-center"
+                >
+                    <span class="opacity-0 group-hover:opacity-100 mr-2 transition-opacity duration-200">
+                        {h.depth === 2 ? '>' : '-'}
+                    </span>
+                    <span class="truncate transition-transform duration-200 block">{h.text}</span>
+                </a>
+            </li>
+        ))}
+    </ul>
+
+    {/* DECORATIVE TERMINAL BLOCK */}
+    <div class="mt-12 pt-8 border-t border-white/5 opacity-50">
+        <div class="flex flex-col gap-1 text-[8px] text-white/20">
+            <span>SECURE_CONN: ACTIVE</span>
+            <span>LATENCY: 12ms</span>
+            <span class="animate-pulse">Monitoring...</span>
+        </div>
+    </div>
+</nav>
+
+<script>
+    // Robust Scroll Spy Logic
+    const initScrollSpy = () => {
+        const headers = Array.from(document.querySelectorAll('article h2, article h3'));
+        // Scope to only Report Index links
+        const navLinks = Array.from(document.querySelectorAll('.report-index-nav a'));
+        
+        const onScroll = () => {
+            let currentId = '';
+            
+            // Find the header closest to the top of the viewport (with some buffer)
+            for (const header of headers) {
+                const rect = header.getBoundingClientRect();
+                // 150px offset to trigger highlight slightly before header hits very top or while reading section
+                if (rect.top < 150) { 
+                    currentId = header.id;
+                } else {
+                    break; // Since headers are in order, we can stop once we find one below the threshold
+                }
+            }
+
+            // If we're at the very top, clear or set to first
+            if (window.scrollY < 50) {
+                currentId = ''; // Optional: could set to first item
+            }
+
+            // Update Active State
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                const span = link.querySelector('span:first-child');
+                const text = link.querySelector('span:last-child');
+                
+                // Handle cases where href is just '#' or '#slug'
+                const match = href === `#${currentId}`;
+
+                if (match) {
+                    link.classList.remove('text-primary/40');
+                    link.classList.add('text-primary');
+                    if (span) span.classList.remove('opacity-0');
+                    if (text) text.classList.add('translate-x-1');
+                } else {
+                    link.classList.add('text-primary/40');
+                    link.classList.remove('text-primary');
+                    if (span) span.classList.add('opacity-0');
+                    if (text) text.classList.remove('translate-x-1');
+                }
+            });
+        };
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        // Initial check
+        onScroll();
+
+        // Smooth Scroll Logic
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const href = link.getAttribute('href');
+                if (!href || href === '#') return;
+                
+                const targetId = href.substring(1);
+                const target = document.getElementById(targetId);
+                
+                if (target) {
+                    const offset = 100; // Buffer for top spacing
+                    const bodyRect = document.body.getBoundingClientRect().top;
+                    const elementRect = target.getBoundingClientRect().top;
+                    const elementPosition = elementRect - bodyRect;
+                    const offsetPosition = elementPosition - offset;
+        
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Optional: update URL hash without jumping
+                    history.pushState(null, '', href);
+                }
+            });
+        });
+    };
+
+    // Initialize on load and on Astro transitions
+    initScrollSpy();
+    document.addEventListener('astro:page-load', initScrollSpy); 
+</script>
