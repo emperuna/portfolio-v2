@@ -38,18 +38,18 @@ export function IncidentLog({ status, config, meta }: IncidentLogProps) {
     }, [logs]);
 
     // React to Status Changes (Real Data Events)
-    useEffect(() => {
-        const addLog = (level: LogEntry['level'], message: string, source: string) => {
-            const newLog = {
-                id: Date.now(),
-                timestamp: new Date().toLocaleTimeString(),
-                level,
-                message,
-                source
-            };
-            setLogs(prev => [...prev.slice(-19), newLog]);
+    const addLog = (level: LogEntry['level'], message: string, source: string) => {
+        const newLog = {
+            id: Math.random() + Date.now(),
+            timestamp: new Date().toLocaleTimeString(),
+            level,
+            message,
+            source
         };
+        setLogs(prev => [...prev.slice(-19), newLog]);
+    };
 
+    useEffect(() => {
         // Event: High CPU
         if (status.cpu > 80) {
             addLog('WARN', `High CPU Load Detected (${status.cpu}%)`, 'CPU');
@@ -65,15 +65,6 @@ export function IncidentLog({ status, config, meta }: IncidentLogProps) {
     // React to Config Changes (Control Plane Events)
     useEffect(() => {
         if (!config) return;
-        const addLog = (level: LogEntry['level'], message: string, source: string) => {
-            setLogs(prev => [...prev.slice(-19), {
-                id: Date.now(),
-                timestamp: new Date().toLocaleTimeString(),
-                level,
-                message,
-                source
-            }]);
-        };
 
         addLog('INFO', `Traffic Level set to ${config.traffic_level.toUpperCase()}`, 'CONFIG');
         addLog('INFO', `Simulation Mode: ${config.sim_mode.toUpperCase()}`, 'CONFIG');
@@ -82,15 +73,6 @@ export function IncidentLog({ status, config, meta }: IncidentLogProps) {
     // React to System Meta (Topology Events)
     useEffect(() => {
         if (!meta) return;
-        const addLog = (level: LogEntry['level'], message: string, source: string) => {
-            setLogs(prev => [...prev.slice(-19), {
-                id: Date.now(),
-                timestamp: new Date().toLocaleTimeString(),
-                level,
-                message,
-                source
-            }]);
-        };
 
         if (meta.commit) {
             addLog('SUCCESS', `GitHub API Linked (Commit: ${meta.commit})`, 'GITHUB');

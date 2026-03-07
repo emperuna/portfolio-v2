@@ -69,7 +69,7 @@ export function ServiceMesh({ trafficLevel = 'low' }: { trafficLevel?: TrafficLe
                                 fill={trafficLevel === 'surge' ? '#f87171' : (trafficLevel === 'high' ? '#fbbf24' : '#34d399')} 
                                 filter="url(#glow)"
                             >
-                                <motion.animate
+                                <animate
                                     attributeName="cx"
                                     from={start.x}
                                     to={end.x}
