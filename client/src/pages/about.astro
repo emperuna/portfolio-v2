@@ -1,7 +1,8 @@
 ---
 import CreativeLayout from '../layouts/CreativeLayout.astro';
 import { HeroBackground } from '../presentation/features/hero/components/HeroBackground';
-import { SystemMonitor } from '../presentation/components/creative/SystemMonitor';
+import { RuntimeLogs } from '../components/about/RuntimeLogs';
+import { SystemSpecs } from '../components/about/SystemSpecs';
 
 // Skeleton for About page
 ---
@@ -16,15 +17,42 @@ import { SystemMonitor } from '../presentation/components/creative/SystemMonitor
             <div class="flex items-center gap-4 mb-2">
                 <div class="h-10 w-10 rounded-full bg-gradient-to-br from-cyan-500 to-indigo-600 border-2 border-white/10 shadow-lg"></div>
                 <div>
-                    <h1 class="text-3xl font-bold text-white">System Diagnostics</h1>
+                    <h1 class="text-3xl font-bold text-white">Developer Activity Log</h1>
                     <p class="text-cyan-400 font-mono text-sm">USER: JEREMY // ROLE: DEVOPS ENGINEER</p>
                 </div>
             </div>
             <p class="text-text-muted font-mono text-sm max-w-xl ml-14">
-                > INITIALIZING KERNEL... WELCOME TO MY DIGITAL WORKSPACE.
+                > ESTABLISHING SECURE CONNECTION TO GITHUB DAEMON... STREAMING ACTIVITY.
             </p>
         </div>
 
-        <SystemMonitor client:load />
+        {/* MODERN CLI / TUI LAYOUT */}
+        <div class="font-mono mx-auto max-w-7xl min-h-[80vh] bg-[#0d0d0d] border border-white/20 shadow-2xl relative">
+            {/* TERMINAL HEADER */}
+            <div class="h-8 bg-white/10 border-b border-white/20 flex items-center justify-between px-4 text-xs text-slate-400">
+                <div class="flex items-center gap-4">
+                    <span>admin@portfolio:~/telemetry</span>
+                    <span class="text-cyan-500">master*</span>
+                </div>
+                <div class="flex gap-2">
+                    <span>[tmux: 2 windows]</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-[1fr_1px_380px] h-[calc(100%-2rem)]">
+                 {/* LEFT: RUNTIME LOGS (JOURNALCTL) */}
+                <div class="h-full relative overflow-hidden">
+                    <RuntimeLogs client:load />
+                </div>
+                
+                {/* DIVIDER */}
+                <div class="hidden lg:block h-full bg-white/20"></div>
+
+                {/* RIGHT: SYSTEM SPECS (NEOFETCH) */}
+                <div class="h-full relative w-full bg-[#0d0d0d]">
+                    <SystemSpecs client:load />
+                </div>
+            </div>
+        </div>
     </div>
 </CreativeLayout>
