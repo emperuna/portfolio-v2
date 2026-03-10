@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import CreativeLayout from '../../layouts/CreativeLayout.astro';
-import ReportIndex from '../../components/content/ReportIndex.astro';
+import ReportIndex from '@features/projects/ReportIndex.astro';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
@@ -18,6 +18,14 @@ const { Content, headings } = await entry.render();
 const formatDate = (d: string | Date | undefined) => {
     if (!d) return 'ONGOING';
     return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).toUpperCase();
+};
+
+const calculateDuration = (start: string | Date, end?: string | Date) => {
+    const startDate = new Date(start);
+    const endDate = end ? new Date(end) : new Date();
+    const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return `${diffDays} DAYS`;
 };
 
 const getImpactColor = (level: string) => {
@@ -91,7 +99,34 @@ const getImpactColor = (level: string) => {
                              {entry.data.root_cause}
                         </p>
                     </div>
+
+                    {/* CTAs */}
+                    {(entry.data.demo_url || entry.data.repo_url) && (
+                        <div class="flex flex-wrap gap-4 mt-8">
+                            {entry.data.demo_url && (
+                                <a href={entry.data.demo_url} target="_blank" rel="noopener noreferrer" class="group relative inline-flex items-center gap-3 px-6 py-3 bg-primary/10 border border-primary/50 text-white font-mono text-xs tracking-[0.2em] uppercase hover:bg-primary/20 transition-all overflow-hidden">
+                                    <div class="absolute inset-x-0 bottom-0 h-px bg-primary/50 transform translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500"></div>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+                                    INITIALIZE SECURE CONNECTION
+                                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                </a>
+                            )}
+                        </div>
+                    )}
                 </header>
+
+                {/* HERO IMAGE */}
+                {entry.data.image && (
+                    <div class="mb-16 border border-white/10 p-2 bg-white/5 relative z-10 group">
+                        <div class="overflow-hidden relative">
+                            <img src={entry.data.image} alt={entry.data.title} class="w-full h-auto object-cover grayscale opacity-70 contrast-125 mix-blend-lighten group-hover:grayscale-0 group-hover:opacity-100 group-hover:mix-blend-normal transition-all duration-700" />
+                            <div class="absolute inset-0 border border-white/10 pointer-events-none"></div>
+                        </div>
+                        <div class="text-[10px] text-white/30 font-mono tracking-widest uppercase mt-3 text-right">
+                            FIG 1.0 // VISUAL_EVIDENCE_ATTACHED
+                        </div>
+                    </div>
+                )}
 
                 {/* METADATA GRID */}
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16 font-mono text-xs relative z-10">
@@ -119,7 +154,7 @@ const getImpactColor = (level: string) => {
                             </div>
                             <div class="flex justify-between mt-4 pt-2 border-t border-white/5">
                                 <span class="text-primary/50">DURATION:</span>
-                                <span>13 DAYS</span>
+                                <span>{calculateDuration(entry.data.timeline.start, entry.data.timeline.end)}</span>
                             </div>
                         </div>
                     </div>
@@ -152,9 +187,10 @@ const getImpactColor = (level: string) => {
                         prose-p:text-gray-300 prose-p:leading-8 prose-p:font-light prose-p:font-sans prose-p:mb-6
                         prose-strong:text-white prose-strong:font-bold prose-strong:font-mono
                         prose-ul:list-none prose-ul:pl-0
-                        prose-li:flex prose-li:items-start prose-li:my-2 prose-li:text-gray-300 prose-li:leading-7
-                        prose-li:before:content-['>>'] prose-li:before:text-primary/50 prose-li:before:mr-3 prose-li:before:font-mono prose-li:before:text-xs prose-li:before:mt-1.5
-                        prose-ol:list-decimal prose-ol:pl-4 prose-ol:marker:text-primary/50 prose-ol:marker:font-mono
+                        prose-ol:list-decimal prose-ol:pl-8 prose-ol:marker:text-primary/50 prose-ol:marker:font-mono prose-ol:text-gray-300 prose-ol:leading-7
+                        prose-li:my-2
+                        [&>ul>li]:flex [&>ul>li]:items-start [&>ul>li]:text-gray-300 [&>ul>li]:leading-7
+                        [&>ul>li]:before:content-['>>'] [&>ul>li]:before:text-primary/50 [&>ul>li]:before:mr-3 [&>ul>li]:before:font-mono [&>ul>li]:before:text-xs [&>ul>li]:before:mt-1.5
                         prose-blockquote:border-l-2 prose-blockquote:border-primary/50 prose-blockquote:bg-white/5 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:not-italic prose-blockquote:text-white/80 prose-blockquote:my-8
                         prose-code:font-mono prose-code:text-primary prose-code:bg-primary/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none prose-code:text-xs
                         prose-pre:bg-[#030303] prose-pre:border prose-pre:border-white/10 prose-pre:p-4 prose-pre:rounded-none
@@ -168,6 +204,31 @@ const getImpactColor = (level: string) => {
                     </aside>
                         
                 </div>
+
+                {/* ATTACHED EVIDENCE SECTION */}
+                {entry.data.evidence && entry.data.evidence.length > 0 && (
+                    <div class="mt-24 border-t border-white/10 pt-16 relative z-10">
+                        <div class="text-white/30 uppercase tracking-[0.2em] mb-8 text-xs flex items-center gap-4">
+                            <span>[ ATTACHED VISUAL EVIDENCE ]</span>
+                            <div class="h-px bg-white/10 flex-grow"></div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {entry.data.evidence.map((img, index) => (
+                                <div class="group relative bg-[#030303] border border-white/5 p-2 transition-all hover:border-primary/30">
+                                    <div class="overflow-hidden bg-[#0a0a0a] border border-white/5 relative aspect-video flex items-center justify-center">
+                                         {/* Note: using standard img tag, but you could integrate Astro Image here for better performance */}
+                                        <img src={img} alt={`Evidence File ${index + 1}`} class="w-full h-full object-cover grayscale opacity-60 mix-blend-lighten group-hover:grayscale-0 group-hover:opacity-100 group-hover:mix-blend-normal transition-all duration-500" loading="lazy" />
+                                    </div>
+                                    <div class="flex justify-between items-center mt-3 px-1 text-[9px] text-white/40 font-mono uppercase tracking-[0.2em]">
+                                        <span>FILE_{String(index + 1).padStart(3, '0')}.DAT</span>
+                                        <span class="group-hover:text-primary transition-colors">>> ANALYZE</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* FOOTER - Moved OUTSIDE the grid so side nav stops sticking before it */}
                 <div class="mt-24 pt-8 border-t-[3px] border-double border-white/10 text-center relative z-10 flex flex-col items-center gap-4">
