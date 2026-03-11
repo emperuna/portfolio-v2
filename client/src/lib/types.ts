@@ -6,6 +6,7 @@ export interface SystemStatus {
   cpu: number;
   memory: number;
   status: SystemHealth;
+  latency_ms: number;
 }
 
 export type ProjectStatus = 'live' | 'archived' | 'maintenance' | 'developing';
