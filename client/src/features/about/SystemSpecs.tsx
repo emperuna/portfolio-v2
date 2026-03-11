@@ -82,25 +82,23 @@ export function SystemSpecs() {
             <div className="p-4 space-y-6 overflow-y-auto custom-scrollbar">
                 
                 {/* NEOFETCH STYLE INFO */}
-                <div className="flex gap-6 mb-8 items-center">
-                    <div className="text-cyan-500 font-bold select-none leading-tight">
-                        <pre>{`       /\\
-      /  \\
-     /    \\
-    /      \\
-   /   ,,   \\
-  /   |  |   \\
- /_-''    ''-_\\`}</pre>
+                <div className="flex gap-6 mb-8 items-start">
+                    <div className="text-primary font-bold select-none leading-tight mr-2 mt-1">
+                        <pre>{`      _  ____ 
+     | |/ ___|
+  _  | | |  _ 
+ | |_| | |_| |
+  \\___/ \\____|`}</pre>
                     </div>
                     <div className="space-y-1">
                         <div className="text-white font-bold mb-2">admin@portfolio</div>
                         <div className="flex gap-2">
-                            <span className="text-cyan-500 font-bold">OS:</span>
-                            <span>PortfolioOS v2.0 (Arch)</span>
+                            <span className="text-primary font-bold">OS:</span>
+                            <span>PortfolioOS v2.0</span>
                         </div>
                         <div className="flex gap-2">
-                            <span className="text-cyan-500 font-bold">Kernel:</span>
-                            <span>5.15.0-76-generic</span>
+                            <span className="text-primary font-bold">Kernel:</span>
+                            <span>5.15.0-76-generic (DevOps)</span>
                         </div>
                          <div className="flex gap-2">
                             <span className="text-cyan-500 font-bold">Uptime:</span>
