@@ -1,7 +1,7 @@
 # Portfolio v2 — Systems-Oriented DevOps Portfolio
 
-![Build Status](https://img.shields.io/badge/build-passing-success?style=for-the-badge)
-![System Status](https://img.shields.io/badge/system-operational-success?style=for-the-badge)
+![Client CI](https://github.com/emperuna/portfolio-v2/actions/workflows/client.yml/badge.svg)
+![Server CI](https://github.com/emperuna/portfolio-v2/actions/workflows/server.yml/badge.svg)
 ![Astro](https://img.shields.io/badge/astro-%23BC52EE.svg?style=for-the-badge&logo=astro&logoColor=white)
 ![Flask](https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
