@@ -1,58 +1,83 @@
 ---
 import CreativeLayout from '../layouts/CreativeLayout.astro';
-import { HeroBackground } from '@features/hero/components/HeroBackground';
-import { RuntimeLogs } from '@features/about/RuntimeLogs';
+import { TerminalTabs } from '@features/about/TerminalTabs';
 import { SystemSpecs } from '@features/about/SystemSpecs';
 
-// Skeleton for About page
 ---
 
-<CreativeLayout title="Logs | Portfolio v2">
-    <div class="fixed inset-0 z-0 opacity-50">
-        <HeroBackground client:load /> 
-    </div>
+<CreativeLayout title="Dossier | Jeremy Garin">
+    <div class="min-h-screen pt-24 pb-24 px-4 bg-[#050505] relative font-mono text-sm selection:bg-primary/30">
+        
+        {/* Vantablack Spotlight Background */}
+        <div class="fixed inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,#000000_100%)] z-0"></div>
 
-    <div class="relative z-10 container mx-auto px-4 pt-32 pb-20 max-w-6xl">
-        <div class="mb-8">
-            <div class="flex items-center gap-4 mb-2">
-                <div class="h-10 w-10 rounded-full bg-gradient-to-br from-cyan-500 to-indigo-600 border-2 border-white/10 shadow-lg"></div>
+        <div class="max-w-7xl mx-auto relative z-10 w-full">
+            
+            {/* DOSSIER HEADER */}
+            <header class="border-b-2 border-white/10 pb-12 mb-16 relative flex flex-col md:flex-row gap-12 items-start md:items-end justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-white">Developer Activity Log</h1>
-                    <p class="text-cyan-400 font-mono text-sm">USER: JEREMY // ROLE: DEVOPS ENGINEER</p>
+                    <div class="flex items-center gap-3 mb-6 text-xs text-primary/70 tracking-[0.3em] uppercase">
+                        <span>~ $ whoami</span>
+                        <span class="inline-block w-2.5 h-4 bg-primary animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]"></span>
+                    </div>
+                    <h1 class="text-4xl md:text-6xl font-bold font-display tracking-tighter text-white mb-4 uppercase">
+                        Jeremy Garin
+                    </h1>
+                    <div class="flex items-center gap-4">
+                        <div class="h-max border border-primary/30 bg-primary/10 px-3 py-1 text-primary text-[10px] tracking-widest uppercase rounded-full">
+                            DEVOPS / FULL-STACK
+                        </div>
+                        <p class="text-sm text-white/50 font-mono tracking-widest uppercase">
+                            PERSONNEL FILE ID: JG-808
+                        </p>
+                    </div>
                 </div>
-            </div>
-            <p class="text-text-muted font-mono text-sm max-w-xl ml-14">
-                > ESTABLISHING SECURE CONNECTION TO GITHUB DAEMON... STREAMING ACTIVITY.
-            </p>
-        </div>
 
-        {/* MODERN CLI / TUI LAYOUT */}
-        <div class="font-mono mx-auto max-w-7xl min-h-[80vh] bg-[#0d0d0d] border border-white/20 shadow-2xl relative">
-            {/* TERMINAL HEADER */}
-            <div class="h-8 bg-white/10 border-b border-white/20 flex items-center justify-between px-4 text-xs text-slate-400">
-                <div class="flex items-center gap-4">
-                    <span>admin@portfolio:~/telemetry</span>
-                    <span class="text-cyan-500">master*</span>
+                {/* METADATA GRID right side */}
+                <div class="grid grid-cols-2 gap-x-12 gap-y-4 text-xs font-mono">
+                    <div class="text-white/30 tracking-[0.2em] uppercase">CLEARANCE</div>
+                    <div class="text-primary text-right tracking-widest">LEVEL_05_ADMIN</div>
+                    
+                    <div class="text-white/30 tracking-[0.2em] uppercase">LOCATION</div>
+                    <div class="text-white/70 text-right tracking-widest hover:text-white transition-colors">LAGUNA, PH</div>
+                    
+                    <div class="text-white/30 tracking-[0.2em] uppercase">STATUS</div>
+                    <div class="text-emerald-500 text-right tracking-widest flex items-center justify-end gap-2 text-[10px] font-bold">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]"></span>
+                        O.D.R. (ACTIVE)
+                    </div>
                 </div>
-                <div class="flex gap-2">
-                    <span>[tmux: 2 windows]</span>
-                </div>
-            </div>
+            </header>
 
-            <div class="grid grid-cols-1 lg:grid-cols-[1fr_1px_380px] h-[calc(100%-2rem)]">
-                 {/* LEFT: RUNTIME LOGS (JOURNALCTL) */}
-                <div class="h-full relative overflow-hidden">
-                    <RuntimeLogs client:load />
-                </div>
+            {/* MODERN CLI / TUI LAYOUT */}
+            <div class="font-mono mx-auto w-full border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.6)] bg-[#08080a] relative group overflow-hidden">
                 
-                {/* DIVIDER */}
-                <div class="hidden lg:block h-full bg-white/20"></div>
+                {/* SUBTLE CRT SCANLINES / NOISE LAYER FOR TUI ONLY */}
+                <div class="absolute inset-0 pointer-events-none opacity-[0.02] bg-[linear-gradient(rgba(255,255,255,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] z-20 mix-blend-overlay"></div>
 
-                {/* RIGHT: SYSTEM SPECS (NEOFETCH) */}
-                <div class="h-full relative w-full bg-[#0d0d0d]">
-                    <SystemSpecs client:load />
+                {/* TERMINAL BODY GRID */}
+                <div class="grid grid-cols-1 lg:grid-cols-[1fr_1px_380px] min-h-[70vh] bg-[#0a0a0c] relative z-10 w-full">
+                     {/* LEFT: INTERACTIVE TMUX TABS (Logs & Config) */}
+                    <div class="h-full relative w-full flex flex-col">
+                        <TerminalTabs client:load />
+                    </div>
+                    
+                    {/* DIVIDER */}
+                    <div class="hidden lg:block h-full bg-white/5 relative z-30"></div>
+
+                    {/* RIGHT: SYSTEM SPECS (NEOFETCH/SIDEBAR) */}
+                    <div class="h-full relative w-full bg-[#080809]">
+                        <SystemSpecs client:load />
+                    </div>
                 </div>
             </div>
+            
+            {/* TERMINAL FOOTER / METADATA */}
+            <div class="mt-8 flex justify-between items-center text-[9px] text-white/20 font-mono tracking-widest uppercase">
+                <div>SYSTEM.LOGS.RENDERED</div>
+                <div>SECURE_CONN: TRUE // LATENCY: 22MS</div>
+            </div>
+            
         </div>
     </div>
 </CreativeLayout>

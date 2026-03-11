@@ -34,29 +34,33 @@ const fetcher = async (url: string) => {
 
             if (event.type === 'PushEvent') {
                 const commitCount = event.payload.commits?.length || 0;
-                const firstCommitMsg = event.payload.commits?.[0]?.message?.split('\\n')[0] || 'Updates';
+                const firstCommitMsg = event.payload.commits?.[0]?.message?.split('\n')[0] || 'Updates';
                 msg = commitCount > 1 
                     ? `pushed ${commitCount} commits: ${firstCommitMsg}...` 
                     : `commit: ${firstCommitMsg}`;
                 status = 'PUSHED';
-                level = 'INFO';
+                level = 'SUCCESS';
                 details = `SHA: ${event.payload.commits?.[0]?.sha?.substring(0, 7) || 'N/A'} | ${details}`;
             } else if (event.type === 'PullRequestReviewEvent') {
-                msg = `reviewed PR: ${event.payload.pull_request?.title || 'Unknown'}`;
+                const reviewState = (event.payload.review?.state || event.payload.action).toLowerCase();
+                msg = `${reviewState} PR: ${event.payload.pull_request?.title || 'Unknown'}`;
                 status = 'REVIEWED';
-                level = 'SUCCESS';
-                details = `Action: ${event.payload.review?.state || event.payload.action} | ${details}`;
+                level = reviewState === 'approved' ? 'SUCCESS' : 'INFO';
+                details = `Action: ${reviewState.toUpperCase()} | ${details}`;
             } else if (event.type === 'CreateEvent') {
                 msg = `created ${event.payload.ref_type}: ${event.payload.ref || event.repo.name}`;
                 status = 'CREATED';
                 level = 'INFO';
             } else if (event.type === 'PullRequestEvent') {
-                msg = `${event.payload.action} PR: ${event.payload.pull_request?.title || 'Unknown'}`;
-                status = 'PR_EVENT';
-                level = event.payload.action === 'closed' ? 'SUCCESS' : 'INFO';
+                const isMerged = event.payload.pull_request?.merged;
+                const action = isMerged ? 'merged' : event.payload.action;
+                msg = `${action} PR: ${event.payload.pull_request?.title || 'Unknown'}`;
+                status = isMerged ? 'MERGED' : 'PR_EVENT';
+                level = isMerged ? 'SUCCESS' : 'INFO';
             } else if (event.type === 'IssuesEvent') {
                 msg = `${event.payload.action} issue: ${event.payload.issue?.title || 'Unknown'}`;
                 status = 'ISSUE';
+                level = event.payload.action === 'closed' ? 'SUCCESS' : 'INFO';
             }
 
             return {
