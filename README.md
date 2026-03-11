@@ -1,10 +1,14 @@
+<div align="center">
+
 # Portfolio v2 — Systems-Oriented DevOps Portfolio
 
-![Client CI](https://github.com/emperuna/portfolio-v2/actions/workflows/client.yml/badge.svg?branch=feature/setup-ci-cd)
-![Server CI](https://github.com/emperuna/portfolio-v2/actions/workflows/server.yml/badge.svg?branch=feature/setup-ci-cd)
+[![Client CI](https://img.shields.io/github/actions/workflow/status/emperuna/portfolio-v2/client.yml?branch=main&style=for-the-badge&label=Client%20CI)](https://github.com/emperuna/portfolio-v2/actions/workflows/client.yml)
+[![Server CI](https://img.shields.io/github/actions/workflow/status/emperuna/portfolio-v2/server.yml?branch=main&style=for-the-badge&label=Server%20CI)](https://github.com/emperuna/portfolio-v2/actions/workflows/server.yml)
 ![Astro](https://img.shields.io/badge/astro-%23BC52EE.svg?style=for-the-badge&logo=astro&logoColor=white)
 ![Flask](https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+
+</div>
 
 > **"A portfolio that behaves like a production system."**
 
