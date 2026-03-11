@@ -1,7 +1,6 @@
 ---
 import CreativeLayout from '../layouts/CreativeLayout.astro';
 import { MissionControl } from '@features/status/MissionControl';
-import { ControlPlane } from '@features/control-plane/ControlPlane';
 
 // Example reuse of existing components for Status page
 ---
@@ -11,9 +10,8 @@ import { ControlPlane } from '@features/control-plane/ControlPlane';
         <div class="absolute inset-0 bg-[linear-gradient(rgba(18,18,18,0)_2px,transparent_2px),linear-gradient(90deg,rgba(18,18,18,0)_2px,transparent_2px)] bg-[size:30px_30px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_0%,#000_70%,transparent_100%)] opacity-20"></div>
     </div>
 
-    <div class="relative z-10 container mx-auto px-4 pt-24 h-[calc(100vh-100px)] flex flex-col justify-center">
+    <div class="relative z-10 container mx-auto px-4 pt-32 pb-16 flex flex-col">
 
         <MissionControl client:load />
-        <ControlPlane client:idle />
     </div>
 </CreativeLayout>
