@@ -10,6 +10,11 @@ on:
     paths:
       - 'server/**'
 
+# Cancel in-progress runs on the same branch to save CI minutes
+concurrency:
+  group: server-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     name: Test Server
@@ -24,7 +29,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.11' # Pinned to match server/Dockerfile
           cache: 'pip'
           cache-dependency-path: server/requirements.txt
 
@@ -34,4 +39,23 @@ jobs:
           pip install pytest
 
       - name: Run tests
-        run: pytest
+        run: pytest --tb=short -v
+
+  deploy:
+    name: Trigger Render Deploy
+    needs: test
+    # Only deploy on push to main, not on PRs
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Trigger Deploy Hook
+        # Render deploy hooks are simple GET requests
+        # Note: Render builds its own Docker image from the repo, we are just telling it to start
+        run: |
+          if [ -z "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" ]; then
+            echo "Error: RENDER_DEPLOY_HOOK_URL secret is not set!"
+            exit 1
+          fi
+          echo "Triggering Render deployment..."
+          curl -X GET "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"

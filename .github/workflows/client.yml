@@ -10,6 +10,11 @@ on:
     paths:
       - 'client/**'
 
+# Cancel in-progress runs on the same branch to save CI minutes
+concurrency:
+  group: client-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build Client
@@ -33,3 +38,33 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-dist
+          path: client/dist/
+          retention-days: 1
+
+  deploy:
+    name: Deploy to Cloudflare Pages
+    needs: build
+    # Only deploy on push to main, not on PRs
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: client-dist
+          path: dist
+          
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: portfolio-v2 # ensure this matches your Pages project name
+          directory: dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
