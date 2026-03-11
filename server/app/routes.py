@@ -20,21 +20,33 @@ def get_status():
 @api_bp.route('/meta')
 def get_meta():
     commit_hash = "unknown"
-    try:
-        commit_hash = subprocess.check_output(
-            ['git', 'rev-parse', '--short', 'HEAD'],
-            stderr=subprocess.DEVNULL
-        ).decode('ascii').strip()
-    except subprocess.SubprocessError as e:
-        current_app.logger.warning(f"Failed to get git commit: {e}")
-    except FileNotFoundError:
-        current_app.logger.warning("Git not found in PATH")
+    
+    # Render natively injects RENDER_GIT_COMMIT during its own builds
+    render_commit = os.environ.get('RENDER_GIT_COMMIT')
+    
+    if render_commit:
+        commit_hash = render_commit[:7]
+    else:
+        try:
+            commit_hash = subprocess.check_output(
+                ['git', 'rev-parse', '--short', 'HEAD'],
+                stderr=subprocess.DEVNULL
+            ).decode('ascii').strip()
+        except subprocess.SubprocessError as e:
+            current_app.logger.warning(f"Failed to get git commit: {e}")
+        except FileNotFoundError:
+            current_app.logger.warning("Git not found in PATH")
 
     uptime_seconds = int(time.time() - current_app.config.get('START_TIME', time.time()))
     cold_start = uptime_seconds < current_app.config.get('COLD_START_SECONDS', 60)
+    
+    version = current_app.config.get("APP_VERSION", "1.0.0")
+    if version == "local" and commit_hash != "unknown":
+        # Fall back to commit hash if APP_VERSION wasn't explicitly injected
+        version = commit_hash
 
     return jsonify({
-        "version": current_app.config.get("APP_VERSION", "1.0.0"),
+        "version": version,
         "commit": commit_hash,
         "environment": "production" if os.environ.get('RENDER') else "development",
         "build_time": current_app.config.get("BUILD_TIME", "unknown"),
