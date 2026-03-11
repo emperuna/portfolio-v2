@@ -80,12 +80,9 @@ export function HeroBackground() {
     };
     window.addEventListener('mousemove', handleMouseMove);
 
-    const drawDiamond = (x: number, y: number, size: number) => {
+    const drawCircle = (x: number, y: number, radius: number) => {
         ctx.beginPath();
-        ctx.moveTo(x, y - size); // Top
-        ctx.lineTo(x + size, y); // Right
-        ctx.lineTo(x, y + size); // Bottom
-        ctx.lineTo(x - size, y); // Left
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
         ctx.closePath();
     };
 
@@ -168,7 +165,7 @@ export function HeroBackground() {
             const ry = Math.sin(runnerAngle) * size * 0.8;
             ctx.fillStyle = '#fff';
             ctx.globalAlpha = 1;
-            drawDiamond(rx, ry, 3);
+            drawCircle(rx, ry, 3);
             ctx.fill();
             ctx.restore();
         }
@@ -176,7 +173,7 @@ export function HeroBackground() {
         // Central Dense Cluster
         ctx.fillStyle = '#fff';
         ctx.globalAlpha = 0.8;
-        drawDiamond(centerX, centerY, 10 + Math.sin(time * 2) * 2); 
+        drawCircle(centerX, centerY, 10 + Math.sin(time * 2) * 2);
         ctx.fill();
     };
 
@@ -330,7 +327,7 @@ export function HeroBackground() {
             // Draw Node
             ctx.globalAlpha = 0.8 + Math.sin(node.pulse) * 0.2;
             ctx.fillStyle = node.color;
-            drawDiamond(node.x, node.y, node.size * (1 + repel)); 
+            drawCircle(node.x, node.y, node.size * (1 + repel));
             ctx.fill();
         });
         

@@ -42,8 +42,8 @@ export function MissionControl() {
                     <div className={`w-3 h-3 rounded-full bg-${statusColor} animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.5)]`}></div>
                     <div>
                         <div className="text-white font-bold tracking-widest text-sm md:text-base">{statusText}</div>
-                        <div className="text-slate-500 text-xs font-mono mt-1 tracking-wider">
-                            REGION: AP-SOUTHEAST-1 // REGISTRY_SYNCDRONE: ONLINE
+                        <div className="text-slate-500 text-xs font-mono mt-1 tracking-wider uppercase">
+                            REGION: AP-SOUTHEAST-1 // REGISTRY_SYNCDRONE: {status.status === 'healthy' ? 'ONLINE' : status.status === 'degraded' ? 'DEGRADED' : 'OFFLINE'}
                         </div>
                     </div>
                 </div>
