@@ -15,6 +15,10 @@ concurrency:
   group: client-ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  deployments: write
+
 jobs:
   build:
     name: Build Client
