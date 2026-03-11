@@ -1,128 +1,126 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useSystemStatus } from './useSystemStatus';
 import { useSystemConfig } from './useSystemConfig';
 import { useSystemMeta } from './useSystemMeta';
-import { LiveHeartbeat } from './LiveHeartbeat';
-import { ServiceMesh } from './ServiceMesh';
-import { IncidentLog } from './IncidentLog';
-import { ControlPanel } from './ControlPanel';
+
+import { TelemetryChart } from './TelemetryChart';
+import { NodesTopology } from './NodesTopology';
+import { SystemLogs } from './SystemLogs';
+import { DashboardControls } from './DashboardControls';
 
 export function MissionControl() {
     const status = useSystemStatus();
-    const { meta } = useSystemMeta();
-    const { config, setDebugMode: setGlobalDebug, setTrafficLevel: setGlobalTraffic } = useSystemConfig(); // Use global config
-    const [debugMode, setDebugMode] = useState(false); // Local debug view toggle (kept for view switching)
-    // const [trafficLevel, setTrafficLevel] = useState<'low' | 'high'>('low'); // Removed local state, use global config
+    const { meta, displayUptime } = useSystemMeta();
+    const { config, setDebugMode: setGlobalDebug, setTrafficLevel: setGlobalTraffic, setSimMode } = useSystemConfig();
+    const [debugMode, setDebugMode] = useState(false);
+
+    // Dynamic global status string
+    let statusColor = "emerald-500";
+    let statusText = "ALL SYSTEMS OPERATIONAL";
+    if (status.status === 'degraded') {
+        statusColor = "yellow-500";
+        statusText = "SYSTEM DEGRADED";
+    } else if (status.status === 'offline') {
+        statusColor = "red-500";
+        statusText = "SYSTEM OUTAGE";
+    }
 
     return (
         <motion.div 
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: "circOut" }}
-            className="w-full max-w-7xl mx-auto border border-primary/30 bg-black/60 backdrop-blur-xl rounded-sm overflow-hidden shadow-[0_0_40px_-10px_rgba(16,185,129,0.1)] flex flex-col relative"
+            className="w-full max-w-7xl mx-auto flex flex-col gap-6"
         >
-            {/* 1. CHASSIS HEADER (Bezel) */}
-            <div className="h-12 border-b border-primary/20 flex items-center justify-between px-4 bg-primary/5 select-none">
-                <div className="flex items-center space-x-3">
-                    <div className="flex space-x-1">
-                        <div className={`w-2 h-2 rounded-full ${status.status === 'offline' ? 'bg-red-500' : 'bg-red-500/20'}`}></div>
-                        <div className={`w-2 h-2 rounded-full ${status.status === 'degraded' ? 'bg-yellow-500' : 'bg-yellow-500/20'}`}></div>
-                        <div className={`w-2 h-2 rounded-full ${status.status === 'healthy' ? 'bg-emerald-500' : 'bg-emerald-500/20'}`}></div>
+            {/* 1. GLOBAL HEADER CARD */}
+            <div className="bg-[#08080a] border border-white/5 rounded-sm p-4 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-xl relative overflow-hidden">
+                {/* Subtle gradient glow matching status */}
+                <div className={`absolute inset-0 bg-gradient-to-r from-${statusColor}/5 to-transparent pointer-events-none`}></div>
+                
+                <div className="flex items-center gap-4 relative z-10">
+                    <div className={`w-3 h-3 rounded-full bg-${statusColor} animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.5)]`}></div>
+                    <div>
+                        <div className="text-white font-bold tracking-widest text-sm md:text-base">{statusText}</div>
+                        <div className="text-slate-500 text-xs font-mono mt-1 tracking-wider">
+                            REGION: AP-SOUTHEAST-1 // REGISTRY_SYNCDRONE: ONLINE
+                        </div>
                     </div>
-                    <h2 className="text-sm font-bold tracking-[0.2em] text-primary/90 uppercase">
-                        System Observation Deck // <span className="text-white/50">V.2.0.4</span>
-                    </h2>
                 </div>
-                <div className="flex items-center space-x-4 text-[10px] font-mono text-primary/60">
-                    <span className={`animate-pulse ${status.status === 'healthy' ? 'text-emerald-400' : 'text-red-400'}`}>
-                        {status.status === 'healthy' ? '● LIVE FEED' : '● CONNECTION LOST'}
-                    </span>
-                    <span>NET: {status.cpu > 80 ? '124ms' : '12ms'}</span>
-                    <span>CPU: {status.cpu}%</span>
+                
+                <div className="flex gap-6 text-xs font-mono bg-[#0a0a0c] px-6 py-3 border border-white/5 rounded-sm relative z-10 w-full md:w-auto">
+                    <div className="flex flex-col flex-1 md:flex-none">
+                        <span className="text-slate-500 mb-1 text-[10px]">UPTIME</span>
+                        <span className="text-white font-bold">
+                            {Math.floor(displayUptime / 3600) > 0 ? `${Math.floor(displayUptime / 3600)}h ` : ''}
+                            {Math.floor((displayUptime % 3600) / 60)}m {displayUptime % 60}s
+                        </span>
+                    </div>
+                    <div className="flex flex-col flex-1 md:flex-none">
+                        <span className="text-slate-500 mb-1 text-[10px]">LATENCY</span>
+                        <span className="text-white font-bold">{status.latency_ms > 0 ? `${status.latency_ms}ms` : '—'}</span>
+                    </div>
+                    <div className="flex flex-col flex-1 md:flex-none hidden sm:flex">
+                        <span className="text-slate-500 mb-1 text-[10px]">VERSION</span>
+                        <span className="text-white font-bold">{meta?.version || '2.0.4'}</span>
+                    </div>
                 </div>
             </div>
 
-            {/* 2. MAIN GRID (Interlocking Layout) */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-primary/20 min-h-[600px] bg-grid-pattern relative">
+            {/* 2. BENTO GRID */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
-                {/* LEFT COLUMN (Visualizations) - Spans 8 cols */}
-                <div className="lg:col-span-8 flex flex-col divide-y divide-primary/20">
-                    
-                    {/* TOP: HEARTBEAT */}
-                    <div className="h-[250px] relative">
-                         <div className="absolute top-2 left-3 z-10">
-                            <h3 className="text-[10px] font-mono text-primary/50 uppercase tracking-wider border border-primary/20 px-2 py-0.5 rounded-full backdrop-blur-sm">
-                                Core_Heartbeat_Monitor
-                            </h3>
-                        </div>
-                        <LiveHeartbeat cpuLoad={status.cpu} systemStatus={status.status} />
-                        
-                        {/* Technical Grid Overlay */}
-                        <div className="absolute inset-0 pointer-events-none opacity-20" 
-                             style={{backgroundImage: 'radial-gradient(circle, rgba(16,185,129,0.3) 1px, transparent 1px)', backgroundSize: '20px 20px'}}>
-                        </div>
+                {/* Main Telemetry Chart (Spans 2 columns) */}
+                <div className="lg:col-span-2 bg-[#08080a] border border-white/5 rounded-sm shadow-xl min-h-[340px] flex flex-col overflow-hidden relative group">
+                    <div className="p-4 border-b border-white/5 flex justify-between items-center text-[10px] font-mono text-slate-400 uppercase tracking-widest bg-[#0a0a0c]/50">
+                        <span className="flex items-center gap-2"><svg className="w-3 h-3 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg> Active Global Requests</span>
+                        <span className="text-emerald-500/50">LIVE_DATA</span>
                     </div>
-
-                    {/* BOTTOM: SERVICE MESH */}
-                    <div className="flex-1 relative min-h-[350px]">
-                        <div className="absolute top-2 left-3 z-10 flex items-center space-x-2">
-                             <h3 className="text-[10px] font-mono text-primary/50 uppercase tracking-wider border border-primary/20 px-2 py-0.5 rounded-full backdrop-blur-sm">
-                                Architecture_Topology
-                            </h3>
-                        </div>
-                        <div className="w-full h-full p-4">
-                            <ServiceMesh trafficLevel={config.traffic_level} />
-                        </div>
+                    <div className="flex-1 relative p-4">
+                        <TelemetryChart cpuLoad={status.cpu} systemStatus={status.status} />
                     </div>
                 </div>
 
-                {/* RIGHT COLUMN (Log & Status) - Spans 4 cols */}
-                <div className="lg:col-span-4 flex flex-col bg-black/20">
-                    {/* Dynamic Header */}
-                    <div className="p-3 border-b border-primary/20 flex justify-between items-center bg-primary/5">
-                        <span className="text-[10px] font-mono uppercase text-primary/70">
-                            {debugMode ? 'Raw Telemetry Stream' : 'System Events'}
-                        </span>
-                        <div className={`h-1.5 w-1.5 rounded-full ${status.status === 'healthy' ? 'bg-emerald-500' : 'bg-red-500'} animate-ping`}></div>
+                {/* Nodes Topology */}
+                <div className="bg-[#08080a] border border-white/5 rounded-sm shadow-xl min-h-[340px] flex flex-col overflow-hidden">
+                    <div className="p-4 border-b border-white/5 flex justify-between items-center text-[10px] font-mono text-slate-400 uppercase tracking-widest bg-[#0a0a0c]/50">
+                        <span className="flex items-center gap-2"><svg className="w-3 h-3 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg> Edge Architecture</span>
+                        <span className="text-emerald-500/50 flex flex-col justify-end items-end h-[0.7rem]"><span className="w-2 h-2 rounded-full bg-emerald-500/50 animate-ping"></span></span>
                     </div>
-                    
-                    <div className="flex-1 overflow-hidden relative">
-                        <AnimatePresence mode="wait">
-                            {debugMode ? (
-                                <motion.div 
-                                    key="debug"
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: 20 }}
-                                    className="absolute inset-0 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 bg-black/50"
-                                >
-                                    <pre className="text-[10px] font-mono text-primary/70 whitespace-pre-wrap">
-                                        {JSON.stringify({ ...status, config, timestamp: new Date().toISOString() }, null, 2)}
-                                    </pre>
-                                </motion.div>
-                            ) : (
-                                <motion.div
-                                    key="log"
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -20 }}
-                                    className="absolute inset-0"
-                                >
-                                    <IncidentLog status={status} config={config} meta={meta} />
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                    <div className="flex-1 relative p-4 bg-[#0a0a0c]/40">
+                        <NodesTopology trafficLevel={config.traffic_level} systemStatus={status.status} />
                     </div>
-
-                    {/* Control Panel (Replacing Static Footer) */}
-                    <ControlPanel 
-                        debugMode={debugMode} 
-                        setDebugMode={setDebugMode}
-                        trafficLevel={config.traffic_level}
-                        setTrafficLevel={setGlobalTraffic}
-                    />
                 </div>
+
+                {/* System Logs */}
+                <div className="lg:col-span-2 bg-[#08080a] border border-white/5 rounded-sm shadow-xl min-h-[280px] flex flex-col overflow-hidden relative">
+                    <div className="p-4 border-b border-white/5 flex justify-between items-center text-[10px] font-mono text-slate-400 uppercase tracking-widest bg-[#0a0a0c]/80 backdrop-blur-md z-10">
+                        <span className="flex items-center gap-2"><svg className="w-3 h-3 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg> {debugMode ? 'Raw Telemetry Stream' : 'Event Traces'}</span>
+                        <div className={`w-1.5 h-1.5 rounded-full ${status.status === 'healthy' ? 'bg-emerald-500' : 'bg-red-500'} animate-pulse`}></div>
+                    </div>
+                    <div className="flex-1 relative bg-black/60">
+                        <SystemLogs status={status} config={config} meta={meta} debugMode={debugMode} />
+                    </div>
+                </div>
+
+                {/* Dashboard Controls */}
+                <div className="bg-[#08080a] border border-white/5 rounded-sm shadow-xl min-h-[280px] flex flex-col overflow-hidden">
+                    <div className="p-4 border-b border-white/5 flex justify-between items-center text-[10px] font-mono text-slate-400 uppercase tracking-widest bg-[#0a0a0c]/50">
+                        <span className="flex items-center gap-2"><svg className="w-3 h-3 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg> Configuration Panel</span>
+                        <span className="text-white/20">ROOT</span>
+                    </div>
+                    <div className="flex-1 p-4 bg-[#0a0a0c]/40">
+                        <DashboardControls 
+                            debugMode={debugMode} 
+                            setDebugMode={setDebugMode}
+                            trafficLevel={config.traffic_level}
+                            setTrafficLevel={setGlobalTraffic}
+                            simMode={config.sim_mode}
+                            setSimMode={setSimMode}
+                        />
+                    </div>
+                </div>
+
             </div>
         </motion.div>
     );

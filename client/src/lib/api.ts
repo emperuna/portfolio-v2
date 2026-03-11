@@ -31,3 +31,11 @@ export async function getSystemConfig(): Promise<SystemConfig> {
 export async function getSystemMeta(): Promise<SystemMeta> {
   return fetchAPI('/api/meta');
 }
+
+export async function updateSystemConfig(config: Partial<SystemConfig>): Promise<SystemConfig> {
+  const response = await fetchAPI('/api/config', {
+    method: 'POST',
+    body: JSON.stringify(config),
+  });
+  return response.config;
+}
