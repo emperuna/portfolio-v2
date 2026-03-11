@@ -1,101 +1,75 @@
 # Architecture Overview
 
-This portfolio is intentionally small but structured with a lean Clean Architecture to keep responsibilities clear and code changes low-risk.
+This portfolio uses a **feature-modular architecture** designed to work with Astro's conventions rather than against them. Features are self-contained, shared code is centralized, and structure scales with complexity.
 
 ## Goals
 
-- Keep UI code focused on rendering.
-- Centralize application behavior (polling, orchestration).
-- Keep domain rules pure and reusable.
-- Isolate infrastructure details (HTTP, env) from UI.
+- Keep features self-contained and easy to reason about.
+- Centralize shared non-UI code (API client, types, utilities).
+- Follow Astro conventions for pages, layouts, and content.
+- Avoid architectural overhead that doesn't earn its keep.
 
-## Layered Structure (Frontend)
-
-```
-Presentation  -> Application -> Domain
-                     ^           ^
-                     |           |
-               Infrastructure ----
-```
-
-### Presentation
-- **Location:** `client/src/presentation`
-- **Role:** UI components, pages, and feature composition.
-- **Rules:** Must not call `fetch` or read `import.meta.env` directly.
-
-### Application
-- **Location:** `client/src/application`
-- **Role:** State orchestration and hooks (e.g., polling).
-- **Rules:** Can call infrastructure, but should not depend on UI.
-
-### Domain
-- **Location:** `client/src/domain`
-- **Role:** Pure types and rules (no framework, no side effects).
-- **Rules:** No imports from presentation or infrastructure.
-
-### Infrastructure
-- **Location:** `client/src/infrastructure`
-- **Role:** HTTP client, API adapters, env access.
-- **Rules:** No UI imports.
-
-## Folder Map
+## Structure
 
 ```
 client/src/
-  application/
-    hooks/
-    state/
-  domain/
-    contracts/
-    entities/
-    rules/
-  infrastructure/
-    api/
-    env/
-    http/
-  presentation/
-    components/
-    features/
-  shared/
-    utils/
-  pages/
-  layouts/
-  styles/
+├── pages/              # Astro routes
+├── layouts/            # Page shells (CreativeLayout)
+├── content/            # Astro content collections (MDX)
+├── styles/             # Global CSS + Tailwind theme
+│
+├── features/           # Self-contained feature modules
+│   ├── hero/           #   Hero section + sub-components
+│   ├── status/         #   Dashboard, hooks, stores
+│   ├── control-plane/  #   Config toggle panel
+│   ├── about/          #   Activity logs, system specs
+│   └── projects/       #   Project cards, exhibit, report index
+│
+├── components/ui/      # Shared reusable UI primitives
+│
+└── lib/                # Shared non-UI code
+    ├── api.ts          #   API client + endpoint functions
+    ├── types.ts        #   All shared type definitions
+    ├── env.ts          #   Environment configuration
+    └── utils.ts        #   Utility functions (cn, status mappers)
 ```
 
-## Dependency Rules (TL;DR)
+## Key Principles
 
-- Presentation -> Application -> Domain
-- Infrastructure is only used by Application (or other infrastructure code).
-- Domain has zero framework or IO dependencies.
+1. **Features own their complexity.** Each feature folder holds its own components, hooks, and state. A complex feature (status) has stores and hooks co-located. A simple feature (about) is just components.
 
-## Key Data Flow: System Status
+2. **Shared code lives in `lib/`.** The API client, types, and utilities are shared across features. One flat folder, no layered indirection.
 
-1. UI calls `useSystemStatus()` from `application/hooks`.
-2. Hook starts polling via `initSystemMonitor()` (ref-counted).
-3. Application calls `infrastructure/api/systemApi`.
-4. Response is normalized by `domain/rules/systemStatus`.
-5. Nanostore updates and UI re-renders.
+3. **Shared UI lives in `components/ui/`.** Reusable primitives like StatusPill, HudCard, and TypewriterText used by multiple features.
+
+4. **Astro conventions stay untouched.** Pages, layouts, content collections, and styles remain where Astro expects them.
 
 ## Aliases
 
 Configured in `client/tsconfig.json` and `client/astro.config.mjs`:
 
-- `@presentation/*`
-- `@application/*`
-- `@domain/*`
-- `@infrastructure/*`
-- `@shared/*`
+- `@features/*`
+- `@components/*`
+- `@lib/*`
+- `@/*` (src root)
 
-Use these to avoid deep relative paths.
+## Key Data Flow: System Status
+
+1. Page renders `<MissionControl />` from `features/status/`.
+2. Component calls `useSystemStatus()` (co-located hook).
+3. Hook starts polling via `initSystemMonitor()` (ref-counted).
+4. Store calls `getSystemStatus()` from `lib/api.ts`.
+5. Response is normalized by `normalizeSystemHealth()` from `lib/utils.ts`.
+6. NanoStore atom updates, component re-renders.
 
 ## How To Add A Feature
 
-1. Create UI under `presentation/features/<feature>`.
-2. If the feature needs state, add a hook/controller in `application`.
-3. Add new types or rules in `domain` as needed.
-4. Add API calls in `infrastructure/api`.
+1. Create a folder under `features/<feature-name>/`.
+2. Add components, hooks, and state inside that folder.
+3. If you need shared types, add them to `lib/types.ts`.
+4. If you need new API calls, add them to `lib/api.ts`.
+5. If you need a reusable UI primitive, add it to `components/ui/`.
 
-## When To Keep It Lean
+## When To Split A Feature
 
-If a new folder stays empty for multiple changes, remove it until needed. The goal is clarity, not ceremony.
+If a feature folder exceeds ~8 files, consider extracting sub-folders (e.g., `features/status/components/`). The goal is clarity, not ceremony.

@@ -14,12 +14,16 @@ description: "Intentional decommissioning of Portfolio V1 to realign public iden
 image: "/assets/portfolio-v2-thumb.jpg"
 ---
 
-import Exhibit from "../../components/content/Exhibit.astro";
+import Exhibit from "../../features/projects/Exhibit.astro";
 
-## 1.0 Executive Summary
+## [ SITREP ]
 
-Portfolio V1 remained functionally stable but suffered from **representation drift**:  
-while the operator’s capabilities had evolved toward system design, infrastructure thinking, and operational awareness, the public interface continued to present a feature-centric narrative.
+- **INCIDENT TRIGGER**: Severe representation drift in the public-facing portfolio system. The V1 interface optimized for feature correctness rather than operational realism and system design.
+- **OBJECTIVE**: Deprecate Portfolio V1 and engineer a new digital identity that prioritizes observability, telemetry, and system-level thinking.
+
+## [ APPLICATION_CONTEXT ]
+
+Portfolio V2 acts as the primary digital footprint and developer identity for the operator. Unlike traditional web portfolios that act as static resumes, this application is engineered as a "Mission Control" or "Telemetry Dashboard". It visualizes the operator's skills, experience, and projects as active, monitored services rather than past achievements.
 
 <Exhibit
   src="/assets/portfolio-v2-thumb.svg"
@@ -28,69 +32,29 @@ while the operator’s capabilities had evolved toward system design, infrastruc
   type="SCHEMATIC"
 />
 
-**Portfolio V2** was initiated as a corrective action to eliminate this mismatch.
+## [ SYSTEM_TOPOLOGY ]
 
-This upgrade prioritizes _how systems are thought about_, not merely _what they do_.
+- **CLIENT_NODE**: Astro + React Islands (Enforcing strict hydration boundaries for performance).
+- **STYLING_ENGINE**: Tailwind CSS v4 (Design tokens optimized for dark-mode, high-contrast operational UI).
+- **TELEMETRY_BACKEND**: Flask API (Python-based simulation service providing mock load metrics and system health endpoints).
+- **DATA_REGISTRY**: Astro Content Collections (Markdown/MDX based incident reporting for major projects).
 
-## 2.0 Problem Statement
+## [ FAILURE_ANALYSIS // REPRESENTATION_DRIFT ]
 
-The previous architecture optimized for implementation proof:
+- **DETECTED_ANOMALY**: The V1 portfolio failed to communicate architectural boundaries, trade-off awareness, or failure modeling. It gave a false signal of being a "feature-focused implementer" rather than a "system-oriented engineer."
+- **ROOT_CAUSE**: The architecture and design language of V1 borrowed heavily from generic SaaS marketing templates rather than mimicking the actual tools used in platform engineering (terminals, monitoring dashboards, log aggregators).
 
-- Feature completeness
-- UI correctness
-- Stack familiarity
+## [ MITIGATION_PROTOCOL ]
 
-However, it failed to communicate:
-
-- Architectural boundaries
-- Trade-off awareness
-- Failure modeling
-- Observability-first thinking
-
-This created a false signal to external reviewers.
-
-## 3.0 Technical Architecture
-
-### 3.1 Frontend: Astro + React (Islands)
-
-Astro was selected to enforce clear separation between static representation and dynamic behavior.
-
-Interactive components are deliberately isolated and hydrated only when necessary, mirroring real-world cost-aware system design rather than defaulting to full client-side execution.
-
-### 3.2 Backend: Flask (Simulated Telemetry)
-
-A lightweight backend exposes system state and health indicators.
-
-While the data is simulated, the interfaces, contracts, and polling patterns reflect real operational systems — emphasizing correctness of _mental models_ over production scale.
-
-## 4.0 Key Capabilities Introduced
-
-- **Mission Control Interface**  
-  A centralized system status view designed to mirror how operators reason about live systems.
-
-- **Incident Log Narrative**  
-  Structured reporting used as a storytelling mechanism to communicate decision-making, not just outcomes.
-
-- **System Visualization Layer**  
-  Visual abstractions used to explain relationships, dependencies, and flow — not decorative animation.
-
-## 5.0 Outcome
-
-Portfolio V2 successfully repositions the operator from a feature-focused implementer to a system-oriented engineer.
-
-Latency is minimal.  
-Complexity is intentional.  
-The interface now reflects how the system is _thought about_, not merely how it is rendered.
+1.  **AESTHETIC_REBOOT**: Abandoned traditional web design principles. Implemented a strict "Operational Realism" design system utilizingmonospace fonts, dark themes, and dynamic status indicators (loading, connecting, healthy, degraded).
+2.  **TELEMETRY_SIMULATION**: Integrated a Flask backend to explicitly simulate chaos and system data, allowing the frontend to demonstrate how it handles live, dynamic telemetry.
+3.  **POST_MORTEM_IMPLEMENTATION**: Replaced standard "Project Portfolios" with "Incident Reports," utilizing Markdown to write technical retrospectives focused on system failures and architectural mitigations (as seen in this document).
 
 <Exhibit
   src="/assets/portfolio-v2-thumb.svg"
   alt="Mission Control Interface"
-  caption="FIG 5.0: MISSION CONTROL INTERFACE"
+  caption="FIG 2.0: MISSION CONTROL INTERFACE"
   type="EVIDENCE"
 />
 
-## 6.0 Closing Note
-
-This incident was not triggered by failure.
-
-It was triggered by growth.
+**RESULT**: Portfolio V2 successfully deployed. Latency is minimal. Complexity is intentional. The system now accurately reflects how the operator _thinks_ about software engineering rather than just what they can build.

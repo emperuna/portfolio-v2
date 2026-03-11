@@ -1,0 +1,52 @@
+---
+title: "SBCC Management System"
+incident_id: "INC-2025-003"
+impact_level: "MODERATE"
+status: "CLOSED"
+root_cause: "Fragmented, manual church administration processes blocking real-time operational insights and reliable scheduling."
+resolution: "SHIPPED"
+affected_systems: ["Django REST", "React 19", "PostgreSQL", "Railway", "Docker"]
+timeline:
+  start: "2025-10-03"
+  end: "2026-02-14"
+description: "Centralized operational platform offering automated volunteer scheduling, real-time absence tracking, and dynamic ministry reporting."
+image: "/assets/projects/sbcc-management/hero.png"
+demo_url: "https://pbcm-sbcc.online"
+evidence:
+  [
+    "/assets/projects/sbcc-management/evidence-1.png",
+    "/assets/projects/sbcc-management/evidence-2.png",
+  ]
+---
+
+import Exhibit from "../../features/projects/Exhibit.astro";
+
+## [ SITREP ]
+
+- **INCIDENT TRIGGER**: The system was engineered to centralize and digitize church operations—including membership, attendance, events, and inventory—that were previously handled through inefficient manual documentation.
+- **OBJECTIVE**: Improve operational record accuracy, automate volunteer scheduling, and provide administrators with real-time analytics and printable reports to permanently streamline church management.
+
+## [ APPLICATION_CONTEXT ]
+
+The SBCC (Santa Cruz Bible Christian Church) Management System is a full-stack, cloud-hosted administrative dashboard. Functioning as a centralized hub, it gives church leadership a unified interface to track dynamic membership data, analyze weekly attendance patterns, and autonomously schedule volunteers.
+
+## [ SYSTEM_TOPOLOGY ]
+
+- **API_GATEWAY**: Python 3.12, Django 5.1, and Django REST Framework (DRF) enforcing robust backend endpoints.
+- **CLIENT_NODE**: React 19 (Vite), TailwindCSS, and Flowbite React to construct a highly responsive modern UI.
+- **DATA_STORE**: PostgreSQL (via Neon) providing stable cloud production data, with SQLite ensuring local/offline synchronization for developers.
+- **INFRA_LAYER**: Docker for containerization, Railway for the primary deployment footprint, and Brevo (Sendinblue) acting as the automated email notification conduit.
+
+## [ FAILURE_ANALYSIS // NETWORK_BLOCKAGE_AND_MIGRATIONS ]
+
+- **DETECTED_ANOMALY**: Critical attendance alerts and volunteer schedules failed to execute in production environments. Developers also faced local schema update failures due to SSL and dependency conflicts.
+- **ROOT_CAUSE**: Outgoing SMTP ports were aggressively blocked by cloud hosting platforms (like Railway). Additionally, macOS-specific SSL certificate verification errors broke development workflows, and complex dependencies in the ministries module triggered `FieldDoesNotExist` errors during database schema migrations.
+
+## [ MITIGATION_PROTOCOL ]
+
+1. **HTTP_TRANSPORT_BYPASS**: Developed a specialized `BrevoEmailBackend` that bypasses heavily restricted SMTP ports by strictly utilizing Brevo’s HTTP API, ensuring highly reliable delivery in cloud environments.
+2. **SSL_WORKAROUND**: Implemented a `CustomEmailBackend` for development environments utilizing a non-verifying SSL context to circumvent rigid macOS certificate constraints.
+3. **SURGICAL_MIGRATIONS**: Manually intercepted and reordered Django migration operations to resolve core field dependency conflicts, enabling smooth schema transitions without panicking the database.
+4. **TELEMETRY_MONITORING**: Engineered a robust `check_frequent_absences` background service that dynamically calculates attendance rates and triggers both in-app notifications and "Pastoral Care" emails to re-engage missing members.
+
+**RESULT**: The church administration system is fully digitized and operational. Administrators now command a reliable, cloud-hosted platform fortified by resilient internal monitoring and guaranteed notification delivery.

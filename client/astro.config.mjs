@@ -13,11 +13,9 @@ export default defineConfig({
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
-        '@presentation': fileURLToPath(new URL('./src/presentation', import.meta.url)),
-        '@application': fileURLToPath(new URL('./src/application', import.meta.url)),
-        '@domain': fileURLToPath(new URL('./src/domain', import.meta.url)),
-        '@infrastructure': fileURLToPath(new URL('./src/infrastructure', import.meta.url)),
-        '@shared': fileURLToPath(new URL('./src/shared', import.meta.url))
+        '@features': fileURLToPath(new URL('./src/features', import.meta.url)),
+        '@components': fileURLToPath(new URL('./src/components', import.meta.url)),
+        '@lib': fileURLToPath(new URL('./src/lib', import.meta.url))
       }
     }
   },
