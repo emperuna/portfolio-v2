@@ -39,7 +39,7 @@ jobs:
           pip install pytest
 
       - name: Run tests
-        run: pytest --tb=short -v
+        run: python -m pytest --tb=short -v
 
   deploy:
     name: Trigger Render Deploy
