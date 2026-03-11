@@ -44,7 +44,7 @@ export function PersonnelFile() {
                                 <div className="flex justify-between sm:justify-start sm:gap-4"><span className="text-white/30 w-24">SUBJECT_ID:</span><span className="text-white/80">JG-808</span></div>
                                 <div className="flex justify-between sm:justify-start sm:gap-4"><span className="text-white/30 w-24">BASE:</span><span className="text-white/80">Laguna, PH</span></div>
                                 <div className="flex justify-between sm:justify-start sm:gap-4"><span className="text-white/30 w-24">UNIT STATUS:</span><span className="text-emerald-400 font-bold flex items-center gap-2">ACTIVE</span></div>
-                                <div className="flex justify-between sm:justify-start sm:gap-4"><span className="text-white/30 w-24">SPECIALTY:</span><span className="text-white/80 shrink-0">Full-Stack / Infra</span></div>
+                                <div className="flex justify-between sm:justify-start sm:gap-4"><span className="text-white/30 w-24">SPECIALTY:</span><span className="text-white/80 shrink-0">Automation / Infra</span></div>
                             </div>
                         </div>
                     </div>
