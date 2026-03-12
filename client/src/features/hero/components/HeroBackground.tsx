@@ -18,6 +18,7 @@ export function HeroBackground() {
   const [activeNode, setActiveNode] = useState<{ x: number, y: number, name: string } | null>(null);
   const activeNodeRef = useRef<{ x: number, y: number, name: string } | null>(null);
   const nodesRef = useRef<Node[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -35,7 +36,6 @@ export function HeroBackground() {
     
     // Configuration
     const TOPOGRAPHY_LINES = 12;
-    const NODE_COUNT = 30;
 
     // Node System
     const nodes = nodesRef.current;
@@ -54,9 +54,12 @@ export function HeroBackground() {
         canvas.width = width; // Standard density for performance
         canvas.height = height;
         
+        setIsMobile(width < 768);
+        
         // Init Nodes
         nodes.length = 0;
-        for (let i = 0; i < NODE_COUNT; i++) {
+        const nodeCount = width < 768 ? 15 : 30;
+        for (let i = 0; i < nodeCount; i++) {
             nodes.push({
                 x: Math.random() * width,
                 y: Math.random() * height,
@@ -181,8 +184,9 @@ export function HeroBackground() {
         ctx.clearRect(0, 0, width, height);
         time += 0.01;
 
-        const centerX = width * 0.75; // Anchor Core to the right (75%)
-        const centerY = height * 0.5;
+        const isMobile = width < 768;
+        const centerX = isMobile ? width * 0.5 : width * 0.75; 
+        const centerY = isMobile ? height * 0.4 : height * 0.5;
 
         // 1. Draw Flowing Topography (Iso-lines)
         ctx.lineWidth = 1;
@@ -366,9 +370,9 @@ export function HeroBackground() {
         ref={containerRef} 
         className="absolute inset-0 w-full h-full overflow-hidden" 
         style={{
-            // Subtle Vignette for full-screen depth, no hard edges
-            maskImage: 'radial-gradient(circle at center, black 60%, transparent 100%)', // Simpler vignette
-            background: 'radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 100%)' // Darken corners
+            // Dynamic Vignette: Less aggressive on mobile
+            maskImage: `radial-gradient(circle at center, black ${isMobile ? '40%' : '60%'}, transparent 100%)`, 
+            background: 'radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 100%)'
         }}
     >
         {/* Vignette Overlay (Optional now, given the mask, but keeps the center darker if needed) */}

@@ -22,7 +22,9 @@ export function HeroSection() {
                     <HeroContent />
 
                     {/* Right: HUD Elements Only (Grid is now background) */}
-                    <HeroHud />
+                    <div className="lg:mt-0 mt-8">
+                        <HeroHud />
+                    </div>
 
                 </div>
             </div>
