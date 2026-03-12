@@ -5,7 +5,7 @@ import { HeroTerminal } from './HeroTerminal';
 
 export function HeroContent() {
     return (
-        <div className="space-y-8">
+        <div className="space-y-4 sm:space-y-8">
             <motion.div 
                 initial="hidden"
                 animate="visible"
@@ -19,7 +19,7 @@ export function HeroContent() {
                         }
                     }
                 }}
-                className="flex flex-col items-start gap-6 pt-20 md:pt-0"
+                className="flex flex-col items-start gap-4 md:gap-6 pt-12 md:pt-0"
             >
                 {/* Status Line */}
                 <motion.div 
@@ -37,7 +37,7 @@ export function HeroContent() {
                 <div className="min-h-[2.5em] flex items-center">
                     <motion.h1 
                         variants={{ hidden: { opacity: 0, scale: 0.9 }, visible: { opacity: 1, scale: 1 } }}
-                        className="text-5xl font-bold tracking-tighter sm:text-6xl lg:text-7xl bg-gradient-to-b from-white via-white/90 to-white/50 bg-clip-text text-transparent leading-[0.9] select-none" 
+                        className="text-4xl font-bold tracking-tighter sm:text-6xl lg:text-7xl bg-gradient-to-b from-white via-white/90 to-white/50 bg-clip-text text-transparent leading-[0.9] select-none" 
                     >
                         <TypewriterText 
                             texts={[
