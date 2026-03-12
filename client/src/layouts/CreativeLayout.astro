@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
+import { NavigationSwitcher } from '../components/layouts/NavigationSwitcher';
 
 interface Props {
   title?: string;
@@ -29,33 +30,8 @@ const inactiveClass = "text-text-muted hover:text-white";
   <body class="min-h-screen font-sans text-text-primary antialiased selection:bg-primary/30 selection:text-white pb-10">
     
     {/* Floating Navigation */}
-    <nav class="fixed top-6 left-1/2 z-50 -translate-x-1/2">
-      <div class="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1.5 px-3 backdrop-blur-xl shadow-2xl">
-        <a 
-          href="/" 
-          class={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${currentPath === "/" ? activeClass : inactiveClass}`}
-        >
-          SYSTEM
-        </a>
-        <a 
-          href="/projects" 
-          class={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${currentPath === "/projects" ? activeClass : inactiveClass}`}
-        >
-          MODULES
-        </a>
-        <a 
-          href="/about" 
-          class={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${currentPath === "/about" ? activeClass : inactiveClass}`}
-        >
-          LOGS
-        </a>
-        <a 
-          href="/status" 
-          class={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${currentPath === "/status" ? activeClass : inactiveClass}`}
-        >
-          STATUS
-        </a>
-      </div>
+    <nav class="fixed top-6 left-0 right-0 z-50 flex justify-center sm:justify-center pointer-events-none px-4">
+      <NavigationSwitcher currentPath={currentPath} client:load />
     </nav>
 
     {/* Main Content Area */}
@@ -77,7 +53,7 @@ const inactiveClass = "text-text-muted hover:text-white";
       </div>
       <div class="flex items-center gap-4">
         <span class="hidden sm:inline">Ln 1, Col 1</span>
-        <span>UTF-8</span>
+        <span class="hidden sm:inline">UTF-8</span>
         <div class="flex items-center gap-2" title="Live Connection">
             <span class="relative flex h-2 w-2">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -110,6 +86,13 @@ const inactiveClass = "text-text-muted hover:text-white";
         );
         pointer-events: none;
         mix-blend-mode: overlay;
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
       }
     </style>
   </body>
