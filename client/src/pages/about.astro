@@ -14,7 +14,7 @@ import { SystemSpecs } from '@features/about/SystemSpecs';
         <div class="max-w-7xl mx-auto relative z-10 w-full">
             
             {/* DOSSIER HEADER */}
-            <header class="border-b-2 border-white/10 pb-12 mb-16 relative flex flex-col md:flex-row gap-12 items-start md:items-end justify-between">
+            <header class="border-b-2 border-white/10 pb-12 mb-16 relative flex flex-col md:flex-row gap-12 items-center md:items-end md:justify-between text-center md:text-left">
                 <div>
                     <div class="flex items-center gap-3 mb-6 text-xs text-primary/70 tracking-[0.3em] uppercase">
                         <span>~ $ whoami</span>
@@ -23,25 +23,25 @@ import { SystemSpecs } from '@features/about/SystemSpecs';
                     <h1 class="text-4xl md:text-6xl font-bold font-display tracking-tighter text-white mb-4 uppercase">
                         Jeremy Garin
                     </h1>
-                    <div class="flex items-center gap-4">
+                    <div class="flex flex-col items-center md:items-start sm:flex-row gap-4">
                         <div class="h-max border border-primary/30 bg-primary/10 px-3 py-1 text-primary text-[10px] tracking-widest uppercase rounded-full">
                             DEVOPS / FULL-STACK
                         </div>
-                        <p class="text-sm text-white/50 font-mono tracking-widest uppercase">
+                        <p class="text-[10px] sm:text-sm text-white/50 font-mono tracking-widest uppercase">
                             PERSONNEL FILE ID: JG-808
                         </p>
                     </div>
                 </div>
 
                 {/* METADATA GRID right side */}
-                <div class="grid grid-cols-2 gap-x-12 gap-y-4 text-xs font-mono">
-                    <div class="text-white/30 tracking-[0.2em] uppercase">CLEARANCE</div>
+                <div class="grid grid-cols-2 gap-x-4 sm:gap-x-12 gap-y-4 text-[10px] sm:text-xs font-mono w-full max-w-md md:w-auto md:max-w-none border-t border-white/5 pt-8 md:pt-0 md:border-t-0">
+                    <div class="text-white/30 tracking-[0.2em] uppercase text-left">CLEARANCE</div>
                     <div class="text-primary text-right tracking-widest">LEVEL_05_ADMIN</div>
                     
-                    <div class="text-white/30 tracking-[0.2em] uppercase">LOCATION</div>
+                    <div class="text-white/30 tracking-[0.2em] uppercase text-left">LOCATION</div>
                     <div class="text-white/70 text-right tracking-widest hover:text-white transition-colors">LAGUNA, PH</div>
                     
-                    <div class="text-white/30 tracking-[0.2em] uppercase">STATUS</div>
+                    <div class="text-white/30 tracking-[0.2em] uppercase text-left">STATUS</div>
                     <div class="text-emerald-500 text-right tracking-widest flex items-center justify-end gap-2 text-[10px] font-bold">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]"></span>
                         O.D.R. (ACTIVE)
@@ -66,7 +66,7 @@ import { SystemSpecs } from '@features/about/SystemSpecs';
                     <div class="hidden lg:block h-full bg-white/5 relative z-30"></div>
 
                     {/* RIGHT: SYSTEM SPECS (NEOFETCH/SIDEBAR) */}
-                    <div class="h-full relative w-full bg-[#080809]">
+                    <div class="h-full relative w-full bg-[#080809] border-t lg:border-t-0 border-white/5">
                         <SystemSpecs client:load />
                     </div>
                 </div>

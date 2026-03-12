@@ -82,7 +82,7 @@ export function SystemSpecs() {
             <div className="p-4 space-y-6 overflow-y-auto custom-scrollbar">
                 
                 {/* NEOFETCH STYLE INFO */}
-                <div className="flex gap-6 mb-8 items-start">
+                <div className="flex flex-col sm:flex-row gap-6 mb-8 items-center sm:items-start text-center sm:text-left">
                     <div className="text-primary font-bold select-none leading-tight mr-2 mt-1">
                         <pre>{`      _  ____ 
      | |/ ___|

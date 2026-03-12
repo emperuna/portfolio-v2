@@ -18,7 +18,7 @@ export function PersonnelFile() {
                     className="max-w-3xl mx-auto space-y-10"
                 >
                     {/* Header Section */}
-                    <div className="flex flex-col md:flex-row items-start gap-8 border-b border-white/10 pb-8">
+                    <div className="flex flex-col md:flex-row items-center md:items-start gap-8 border-b border-white/10 pb-8 text-center md:text-left">
                         {/* Dossier Photo Placeholder */}
                         <div className="w-32 h-40 shrink-0 bg-[#08080a] border border-white/10 flex flex-col items-center justify-center relative overflow-hidden group shadow-[0_0_20px_rgba(0,0,0,0.5)]">
                            {/* Scanline overlay over photo box */}
@@ -36,11 +36,11 @@ export function PersonnelFile() {
                                 DATA_SUBJECT_VERIFIED
                             </div>
                             
-                            <div className="text-primary font-bold text-xs tracking-widest uppercase mb-6 border-b border-white/5 pb-2 w-max">
+                            <div className="text-primary font-bold text-xs tracking-widest uppercase mb-6 border-b border-white/5 pb-2 w-max mx-auto md:mx-0">
                                 Software Engineer / DevOps
                             </div>
                             
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-xs font-mono bg-[#08080a] p-4 border border-white/5 rounded-sm shadow-inner">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-xs font-mono bg-[#08080a] p-4 border border-white/5 rounded-sm shadow-inner text-left w-full">
                                 <div className="flex justify-between sm:justify-start sm:gap-4"><span className="text-white/30 w-24">SUBJECT_ID:</span><span className="text-white/80">JG-808</span></div>
                                 <div className="flex justify-between sm:justify-start sm:gap-4"><span className="text-white/30 w-24">BASE:</span><span className="text-white/80">Laguna, PH</span></div>
                                 <div className="flex justify-between sm:justify-start sm:gap-4"><span className="text-white/30 w-24">UNIT STATUS:</span><span className="text-emerald-400 font-bold flex items-center gap-2">ACTIVE</span></div>

@@ -56,16 +56,20 @@ export function TelemetryChart({ cpuLoad, systemStatus }: { cpuLoad: number, sys
             </div>
 
             {/* The Bars */}
-            <div className="flex-1 flex items-end justify-between gap-[2px] sm:gap-1 px-4 z-10">
-                {dataPoints.map((val, i) => (
-                    <motion.div
-                        key={i}
-                        className={`w-full rounded-t-[1px] ${barColor} ${val > 80 ? 'opacity-100 shadow-[0_0_8px_currentColor]' : 'opacity-60'}`}
-                        initial={{ height: 0 }}
-                        animate={{ height: `${Math.max(2, val)}%` }}
-                        transition={{ type: "tween", duration: 0.2 }}
-                    />
-                ))}
+            <div className="flex-1 flex items-end justify-between gap-[2px] sm:gap-1 px-4 z-10 w-full overflow-hidden">
+                {dataPoints.map((val, i) => {
+                    // Hide the first 20 bars on mobile using CSS to keep the DOM stable but visually clean
+                    const isExcessMobile = i < 20; 
+                    return (
+                        <motion.div
+                            key={i}
+                            className={`w-full rounded-t-[1px] ${barColor} ${val > 80 ? 'opacity-100 shadow-[0_0_8px_currentColor]' : 'opacity-60'} ${isExcessMobile ? 'hidden sm:block' : ''}`}
+                            initial={{ height: 0 }}
+                            animate={{ height: `${Math.max(2, val)}%` }}
+                            transition={{ type: "tween", duration: 0.2 }}
+                        />
+                    );
+                })}
             </div>
 
             {/* X-Axis Gradient Fade */}
