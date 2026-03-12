@@ -177,7 +177,7 @@ export function HeroBackground() {
 
         const isMobile = width < 768;
         const centerX = isMobile ? width * 0.5 : width * 0.75; 
-        const centerY = isMobile ? height * 0.4 : height * 0.5;
+        const centerY = isMobile ? height * 0.55 : height * 0.5;
 
         // 1. Draw Flowing Topography (Iso-lines)
         ctx.lineWidth = 1;
@@ -342,8 +342,8 @@ export function HeroBackground() {
         ref={containerRef} 
         className="absolute inset-0 w-full h-full overflow-hidden" 
         style={{
-            // Dynamic Vignette: Less aggressive on mobile
-            maskImage: `radial-gradient(circle at center, black ${isMobile ? '40%' : '60%'}, transparent 100%)`, 
+            // Dynamic Vignette: Wider on mobile to show more mesh
+            maskImage: 'radial-gradient(circle at center, black 60%, transparent 100%)', 
             background: 'radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 100%)'
         }}
     >
