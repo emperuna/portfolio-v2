@@ -2,57 +2,71 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { formatDistanceToNowStrict } from 'date-fns';
 
+interface SkillModule {
+    id: string;
+    name: string;
+    iconId?: string;
+    slug?: string;
+    color?: string;
+}
+
+interface SkillCategory {
+    category: string;
+    modules: SkillModule[];
+}
+
 // Mock Data for Skills (Categorized)
-const SKILLS_MODULES = [
+const SKILLS_MODULES: SkillCategory[] = [
     { 
         category: "devops-infra", 
         modules: [
-            { id: 'OPS_01', name: 'GitHub Actions', version: 'v3.0' },
-            { id: 'OPS_02', name: 'Docker', version: '24.0' },
-            { id: 'OPS_03', name: 'Cloudflare', version: 'worker' },
-            { id: 'OPS_04', name: 'Railway', version: 'stable' },
-            { id: 'OPS_05', name: 'Render', version: 'auto' },
-            { id: 'OPS_06', name: 'Heroku', version: 'cli-8.0' },
-            { id: 'OPS_07', name: 'Vercel', version: 'cli-32' },
-            { id: 'OPS_08', name: 'Netlify', version: 'cli-16' },
-            { id: 'OPS_09', name: 'Bash', version: '5.2' },
-            { id: 'OPS_10', name: 'Python (Scripting)', version: '3.11' },
-            { id: 'OPS_11', name: 'Git', version: '2.43' },
+            { id: 'OPS_01', name: 'GitHub Actions', iconId: 'githubactions' },
+            { id: 'OPS_02', name: 'Docker', iconId: 'docker' },
+            { id: 'OPS_03', name: 'Cloudflare', slug: 'cloudflare', color: 'F38020' },
+            { id: 'OPS_04', name: 'Railway', slug: 'railway', color: '0BC5AD' },
+            { id: 'OPS_05', name: 'Render', slug: 'render', color: 'white' },
+            { id: 'OPS_06', name: 'Heroku', iconId: 'heroku', color: '430098' },
+            { id: 'OPS_07', name: 'Vercel', iconId: 'vercel' },
+            { id: 'OPS_08', name: 'Netlify', iconId: 'netlify' },
+            { id: 'OPS_09', name: 'Bash', iconId: 'bash' },
+            { id: 'OPS_10', name: 'Python', iconId: 'python' },
+            { id: 'OPS_11', name: 'Git', iconId: 'git' },
         ]
     },
     {
         category: "languages",
         modules: [
-            { id: 'LANG_01', name: 'Java', version: '17-lts' },
-            { id: 'LANG_02', name: 'Python', version: '3.11' },
-            { id: 'LANG_03', name: 'JavaScript', version: 'es2023' },
-            { id: 'LANG_04', name: 'TypeScript', version: '5.3' },
-            { id: 'LANG_05', name: 'C#', version: 'dotnet-8' },
-            { id: 'LANG_06', name: 'Dart', version: '3.2' },
-            { id: 'LANG_07', name: 'HTML5', version: 'w3c' },
-            { id: 'LANG_08', name: 'CSS3', version: 'modules' },
-            { id: 'LANG_09', name: 'Markdown', version: 'gfm' },
+            { id: 'LANG_01', name: 'Java', iconId: 'java' },
+            { id: 'LANG_02', name: 'Python', iconId: 'python' },
+            { id: 'LANG_03', name: 'JavaScript', iconId: 'js' },
+            { id: 'LANG_04', name: 'TypeScript', iconId: 'ts' },
+            { id: 'LANG_05', name: 'C#', iconId: 'cs' },
+            { id: 'LANG_06', name: 'Dart', iconId: 'dart' },
+            { id: 'LANG_07', name: 'HTML5', iconId: 'html' },
+            { id: 'LANG_08', name: 'CSS3', iconId: 'css' },
+            { id: 'LANG_09', name: 'Markdown', iconId: 'md' },
         ]
     },
     {
         category: "frameworks-libs",
         modules: [
-            { id: 'FW_01', name: 'Spring Boot', version: '3.2' },
-            { id: 'FW_02', name: 'Django', version: '5.0' },
-            { id: 'FW_03', name: 'Flask', version: '3.0' },
-            { id: 'FW_04', name: 'React', version: '18.2' },
-            { id: 'FW_05', name: 'Flutter', version: '3.16' },
-            { id: 'FW_06', name: 'Tailwind CSS', version: '3.4' },
-            { id: 'FW_07', name: 'Bootstrap', version: '5.3' },
+            { id: 'FW_01', name: 'Spring Boot', iconId: 'spring' },
+            { id: 'FW_02', name: 'Django', iconId: 'django' },
+            { id: 'FW_03', name: 'Flask', iconId: 'flask' },
+            { id: 'FW_04', name: 'React', iconId: 'react' },
+            { id: 'FW_05', name: 'Astro', iconId: 'astro' },
+            { id: 'FW_06', name: 'Flutter', iconId: 'flutter' },
+            { id: 'FW_07', name: 'Tailwind CSS', iconId: 'tailwind' },
+            { id: 'FW_08', name: 'Bootstrap', iconId: 'bootstrap' },
         ]
     },
     {
         category: "tools-environment",
         modules: [
-            { id: 'TOOL_01', name: 'GitHub', version: 'stable' },
-            { id: 'TOOL_02', name: 'VS Code', version: '1.85' },
-            { id: 'TOOL_03', name: 'Antigravity', version: 'ai-core' },
-            { id: 'TOOL_04', name: 'Figma', version: 'beta' },
+            { id: 'TOOL_01', name: 'GitHub', iconId: 'github' },
+            { id: 'TOOL_02', name: 'VS Code', iconId: 'vscode' },
+            { id: 'TOOL_03', name: 'Antigravity', slug: 'ai-core' },
+            { id: 'TOOL_04', name: 'Figma', iconId: 'figma' },
         ]
     }
 ];
@@ -124,11 +138,21 @@ export function SystemSpecs() {
                         {SKILLS_MODULES.map((cat, i) => (
                             <div key={i}>
                                 <div className="text-slate-500 mb-1 ml-2"># {cat.category}</div>
-                                <div className="flex flex-wrap gap-1.5 mt-1">
+                                <div className="flex flex-wrap gap-2 mt-1">
                                     {cat.modules.map((mod) => (
-                                        <div key={mod.id} className="group flex items-center gap-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded px-2 py-1 transition-colors cursor-default">
-                                            <span className="text-cyan-300 text-[10px] font-medium tracking-wide">{mod.name}</span>
-                                            <span className="text-slate-500 text-[9px] group-hover:text-slate-400 transition-colors">{mod.version}</span>
+                                        <div key={mod.id} className="group flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/5 rounded px-2 py-1.5 transition-all cursor-default hover:border-primary/30">
+                                            {mod.slug === 'ai-core' ? (
+                                                <div className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                                                </div>
+                                            ) : (
+                                                <img 
+                                                    src={mod.iconId ? `https://skillicons.dev/icons?i=${mod.iconId}` : `https://cdn.simpleicons.org/${mod.slug}/${mod.color || 'white'}`} 
+                                                    alt={mod.name} 
+                                                    className="w-4 h-4 object-contain brightness-90 group-hover:brightness-110 transition-all"
+                                                />
+                                            )}
+                                            <span className="text-white/70 group-hover:text-white text-[10px] font-medium tracking-wide transition-colors">{mod.name}</span>
                                         </div>
                                     ))}
                                 </div>
