@@ -10,13 +10,11 @@ export function HeroBackground() {
     size: number;
     color: string;
     pulse: number;
-    name: string;
   }
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [activeNode, setActiveNode] = useState<{ x: number, y: number, name: string } | null>(null);
-  const activeNodeRef = useRef<{ x: number, y: number, name: string } | null>(null);
+  const activeNodeRef = useRef<{ x: number, y: number } | null>(null);
   const nodesRef = useRef<Node[]>([]);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -40,12 +38,6 @@ export function HeroBackground() {
     // Node System
     const nodes = nodesRef.current;
 
-    const techStack = [
-        "GitHub Actions", "Docker", "Cloudflare", "Railway", "Render", "Heroku", "Vercel", "Netlify", "Bash", "Python", "Git",
-        "Java", "JavaScript", "C#", "Dart", "HTML5", "CSS3", "Markdown",
-        "Spring Boot", "Django", "Flask", "React", "Flutter", "Tailwind CSS", "Bootstrap",
-        "VS Code", "Antigravity", "Figma"
-    ];
 
     const resize = () => {
         if (!containerRef.current || !canvas) return;
@@ -68,7 +60,6 @@ export function HeroBackground() {
                 size: Math.random() * 3 + 2,
                 color: Math.random() > 0.5 ? '#06b6d4' : '#6366f1', // Cyan / Indigo
                 pulse: Math.random() * Math.PI,
-                name: techStack[Math.floor(Math.random() * techStack.length)]
             });
         }
     };
@@ -127,7 +118,7 @@ export function HeroBackground() {
             const parallaxY = (mouseY - height / 2) * (0.02 * (i + 1));
             
             const distToMouse = Math.hypot(mouseX - centerX, mouseY - centerY);
-            const glitchIntensity = Math.max(0, 300 - distToMouse) / 300 * 5; // Glitch stronger when mouse close
+            const glitchIntensity = Math.max(0, 300 - distToMouse) / 300 * 5;
 
             // RGB Split Drawing Helper
             const drawRing = (color: string, offsetX: number, offsetY: number) => {
@@ -308,25 +299,6 @@ export function HeroBackground() {
                 }
             });
 
-            // Hit detection for hover
-            let foundNode = null;
-            if (nodes.length < 100) { // Safety check
-                 // Check reverse to select top node first
-                 for (let i = nodes.length - 1; i >= 0; i--) {
-                     const n = nodes[i];
-                     const dist = Math.hypot(mouseX - n.x, mouseY - n.y);
-                     if (dist < 30) { // 30px hit area
-                         foundNode = { x: n.x, y: n.y, name: n.name };
-                         break;
-                     }
-                 }
-            }
-            
-            // Debounce/Throttle state update to avoid thrashing
-            if (JSON.stringify(activeNodeRef.current) !== JSON.stringify(foundNode)) {
-                activeNodeRef.current = foundNode;
-                setActiveNode(foundNode);
-            }
 
             // Draw Node
             ctx.globalAlpha = 0.8 + Math.sin(node.pulse) * 0.2;
@@ -391,25 +363,6 @@ export function HeroBackground() {
             </div>
         </div>
 
-        {/* Hover Tooltip */}
-        <AnimatePresence>
-            {activeNode && (
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.8, y: 10 }}
-                    style={{ 
-                        left: activeNode.x, 
-                        top: activeNode.y 
-                    }}
-                    className="absolute z-50 pointer-events-none -translate-x-1/2 -translate-y-[150%]"
-                >
-                    <div className="px-3 py-1.5 rounded bg-black/80 border border-cyan-500/50 backdrop-blur-md text-xs font-mono text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
-                        {activeNode.name}
-                    </div>
-                </motion.div>
-            )}
-        </AnimatePresence>
     </div>
   );
 }
