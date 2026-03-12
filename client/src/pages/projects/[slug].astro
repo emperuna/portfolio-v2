@@ -38,7 +38,7 @@ const getImpactColor = (level: string) => {
 ---
 
 <CreativeLayout title={`INCIDENT: ${entry.data.incident_id}`}>
-    <div class="min-h-screen pt-24 pb-24 px-4 bg-[#050505] relative font-mono text-sm group-print:bg-white group-print:text-black">
+    <div class="min-h-screen pt-24 pb-24 px-4 bg-[#050505] relative font-mono text-sm group-print:bg-white group-print:text-black overflow-x-hidden">
         
         {/* Background Texture */}
         <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: repeating-linear-gradient(0deg, transparent, transparent 19px, #fff 20px), repeating-linear-gradient(90deg, transparent, transparent 19px, #fff 20px);"></div>
@@ -52,7 +52,7 @@ const getImpactColor = (level: string) => {
             </a>
 
             {/* PAPER SHEET */}
-            <div class="bg-[#08080a] border border-white/10 relative p-8 md:p-12 lg:p-16 shadow-2xl">
+            <div class="bg-[#08080a] border border-white/10 relative p-5 md:p-12 lg:p-16 shadow-2xl">
                 
                 {/* CLASSIFICATION BANNER */}
                 <div class="absolute top-0 inset-x-0 h-8 flex items-center justify-center bg-white/5 border-b border-white/5 text-[10px] tracking-[0.3em] font-bold text-white/30 select-none overflow-hidden">
@@ -71,11 +71,11 @@ const getImpactColor = (level: string) => {
                 </div>
 
                 {/* HEADER SECTION */}
-                <header class="border-b-2 border-white/10 pb-8 mb-12 relative mt-8">
+                <header class="border-b-2 border-white/10 pb-8 mb-12 relative mt-16 md:mt-8">
                      {/* STAMP */}
-                    <div class={`absolute top-0 right-0 border-[3px] rounded-sm p-4 transform rotate-[-12deg] mix-blend-screen opacity-90 text-center select-none pointer-events-none ${getImpactColor(entry.data.impact_level)}`} style="mask-image: url('/assets/grunge-mask.svg'); -webkit-mask-image: url('/assets/grunge-mask.svg');">
-                        <div class="text-xs tracking-[0.25em] font-bold uppercase">{entry.data.status}</div>
-                        <div class="text-[8px] opacity-70 mt-1">AUTH: SYS_ADMIN</div>
+                    <div class={`absolute -top-12 sm:top-0 right-0 border-[2px] sm:border-[3px] rounded-sm p-2 sm:p-4 transform rotate-[-8deg] sm:rotate-[-12deg] mix-blend-screen opacity-90 text-center select-none pointer-events-none ${getImpactColor(entry.data.impact_level)}`} style="mask-image: url('/assets/grunge-mask.svg'); -webkit-mask-image: url('/assets/grunge-mask.svg');">
+                        <div class="text-[10px] sm:text-xs tracking-[0.25em] font-bold uppercase">{entry.data.status}</div>
+                        <div class="text-[7px] sm:text-[8px] opacity-70 mt-0.5 sm:mt-1">AUTH: SYS_ADMIN</div>
                     </div>
 
                     <div class="flex flex-col gap-2 mb-6 text-xs text-primary/50 tracking-widest">
@@ -93,9 +93,9 @@ const getImpactColor = (level: string) => {
                         {entry.data.title}
                     </h1>
 
-                    <div class="p-4 border-l-2 border-primary/20 bg-primary/5 max-w-2xl">
+                    <div class="p-4 border-l-2 border-primary/20 bg-primary/5 max-w-2xl w-full">
                         <span class="block text-[10px] text-primary/40 tracking-widest mb-1">ROOT CAUSE ANALYSIS:</span>
-                        <p class="text-lg font-light text-primary/90 leading-relaxed font-sans">
+                        <p class="text-base sm:text-lg font-light text-primary/90 leading-relaxed font-sans">
                              {entry.data.root_cause}
                         </p>
                     </div>
@@ -104,10 +104,10 @@ const getImpactColor = (level: string) => {
                     {(entry.data.demo_url || entry.data.repo_url) && (
                         <div class="flex flex-wrap gap-4 mt-8">
                             {entry.data.demo_url && (
-                                <a href={entry.data.demo_url} target="_blank" rel="noopener noreferrer" class="group relative inline-flex items-center gap-3 px-6 py-3 bg-primary/10 border border-primary/50 text-white font-mono text-xs tracking-[0.2em] uppercase hover:bg-primary/20 transition-all overflow-hidden">
+                                <a href={entry.data.demo_url} target="_blank" rel="noopener noreferrer" class="group relative inline-flex items-center gap-3 px-5 py-3 bg-primary/10 border border-primary/50 text-white font-mono text-[10px] sm:text-xs tracking-[0.2em] uppercase hover:bg-primary/20 transition-all overflow-hidden w-full sm:w-auto justify-center sm:justify-start">
                                     <div class="absolute inset-x-0 bottom-0 h-px bg-primary/50 transform translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500"></div>
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
-                                    INITIALIZE SECURE CONNECTION
+                                    SECURE CONNECTION
                                     <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                                 </a>
                             )}
@@ -134,8 +134,8 @@ const getImpactColor = (level: string) => {
                         <div class="text-white/30 uppercase tracking-[0.2em] mb-4 text-[10px] border-b border-white/5 pb-2">AFFECTED_SYSTEMS</div>
                         <ul class="space-y-2">
                             {entry.data.affected_systems.map(sys => (
-                                <li class="text-primary/90 flex items-start">
-                                    <span class="text-primary/30 mr-3 shrink-0">::</span>
+                                <li class="text-primary/90 relative pl-5 text-[11px] sm:text-xs">
+                                    <span class="text-primary/30 absolute left-0 text-[10px]">::</span>
                                     {sys}
                                 </li>
                             ))}
@@ -178,7 +178,7 @@ const getImpactColor = (level: string) => {
                 </div>
 
                 {/* CONTENT GRID (Content + Index) */}
-                <div class="grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-12 relative z-10">
+                <div class="flex flex-col-reverse lg:grid lg:grid-cols-[1fr_240px] gap-12 relative z-10">
                     
                     {/* MAIN CONTENT AREA */}
                     <article class="prose prose-invert max-w-none min-w-0
@@ -189,8 +189,8 @@ const getImpactColor = (level: string) => {
                         prose-ul:list-none prose-ul:pl-0
                         prose-ol:list-decimal prose-ol:pl-8 prose-ol:marker:text-primary/50 prose-ol:marker:font-mono prose-ol:text-gray-300 prose-ol:leading-7
                         prose-li:my-2
-                        [&>ul>li]:flex [&>ul>li]:items-start [&>ul>li]:text-gray-300 [&>ul>li]:leading-7
-                        [&>ul>li]:before:content-['>>'] [&>ul>li]:before:text-primary/50 [&>ul>li]:before:mr-3 [&>ul>li]:before:font-mono [&>ul>li]:before:text-xs [&>ul>li]:before:mt-1.5
+                        [&>ul>li]:relative [&>ul>li]:pl-6 [&>ul>li]:text-gray-300 [&>ul>li]:leading-7 [&>ul>li]:mb-4
+                        [&>ul>li]:before:absolute [&>ul>li]:before:left-0 [&>ul>li]:before:content-['>>'] [&>ul>li]:before:text-primary/50 [&>ul>li]:before:font-mono [&>ul>li]:before:text-[10px] [&>ul>li]:before:mt-1
                         prose-blockquote:border-l-2 prose-blockquote:border-primary/50 prose-blockquote:bg-white/5 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:not-italic prose-blockquote:text-white/80 prose-blockquote:my-8
                         prose-code:font-mono prose-code:text-primary prose-code:bg-primary/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none prose-code:text-xs
                         prose-pre:bg-[#030303] prose-pre:border prose-pre:border-white/10 prose-pre:p-4 prose-pre:rounded-none
@@ -199,7 +199,7 @@ const getImpactColor = (level: string) => {
                     </article>
 
                     {/* STICKY SIDEBAR */}
-                    <aside class="relative lg:sticky lg:top-32 h-fit self-start">
+                    <aside class="relative lg:sticky lg:top-32 h-fit self-start w-full border-b border-white/10 pb-8 lg:border-0 lg:pb-0 mb-8 lg:mb-0">
                         <ReportIndex headings={headings} />
                     </aside>
                         
