@@ -77,14 +77,14 @@ export function SystemLogs({ status, debugMode }: any) {
 
     if (debugMode) {
         return (
-            <div className="absolute inset-0 p-4 overflow-y-auto scrollbar-thin custom-scrollbar bg-black/80 font-mono text-[10px] text-cyan-500 whitespace-pre-wrap">
+            <div className="absolute inset-0 p-4 overflow-y-auto scrollbar-thin custom-scrollbar bg-black/80 font-mono text-[10px] text-cyan-500 whitespace-pre-wrap h-48 md:h-auto md:absolute touch-pan-y">
                 {JSON.stringify({ status, timestamp: new Date().toISOString() }, null, 2)}
             </div>
         );
     }
 
     return (
-        <div ref={scrollRef} className="absolute inset-0 p-4 overflow-y-auto custom-scrollbar flex flex-col justify-end">
+        <div ref={scrollRef} className="absolute inset-0 p-4 overflow-y-auto custom-scrollbar flex flex-col justify-end h-48 md:h-auto md:absolute touch-pan-y">
             <div className="space-y-1 w-full">
                 {logs.map((log, i) => {
                     const isError = log.includes("ERROR") || log.includes("CRITICAL") || log.includes("FATAL");
