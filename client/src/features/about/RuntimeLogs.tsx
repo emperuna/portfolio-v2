@@ -146,24 +146,27 @@ export function RuntimeLogs() {
                             ${expandedId === log.id ? 'bg-white/5 border-l-2 border-emerald-500' : 'text-slate-300 hover:bg-white/10 border-l-2 border-transparent'}
                         `}
                     >
-                        <div className="flex items-start px-2 py-1">
-                            {/* Timestamp */}
-                            <div className={`w-32 lg:w-36 shrink-0 text-xs py-0.5 ${expandedId === log.id ? 'text-slate-400' : 'text-slate-500'}`}>
-                                {formatDistanceToNow(new Date(log.time), { addSuffix: true })}
-                            </div>
-                            
-                            {/* Level */}
-                            <div className={`w-16 lg:w-20 shrink-0 font-bold text-xs py-0.5
-                                ${log.level === 'WARN' ? 'text-orange-400' : 
-                                  log.level === 'SUCCESS' ? 'text-emerald-400' :
-                                  log.level === 'DEBUG' ? 'text-slate-400' : 'text-cyan-400'}
-                            `}>
-                                [{log.level}]
+                        <div className="flex flex-col sm:flex-row items-start px-2 py-1.5 sm:py-1 gap-1 sm:gap-0">
+                            {/* Metadata Row (Stacked on mobile) */}
+                            <div className="flex items-center gap-3 sm:contents">
+                                {/* Timestamp */}
+                                <div className={`text-[10px] sm:text-xs shrink-0 sm:w-32 lg:w-36 ${expandedId === log.id ? 'text-slate-400' : 'text-slate-500'}`}>
+                                    {formatDistanceToNow(new Date(log.time), { addSuffix: true })}
+                                </div>
+                                
+                                {/* Level */}
+                                <div className={`font-bold text-[10px] sm:text-xs shrink-0 sm:w-16 lg:w-20
+                                    ${log.level === 'WARN' ? 'text-orange-400' : 
+                                      log.level === 'SUCCESS' ? 'text-emerald-400' :
+                                      log.level === 'DEBUG' ? 'text-slate-400' : 'text-cyan-400'}
+                                `}>
+                                    [{log.level}]
+                                </div>
                             </div>
 
                             {/* Message */}
-                            <div className="flex-1 py-0.5 min-w-0">
-                                <div className={`truncate ${expandedId === log.id ? 'text-white font-bold' : ''}`}>
+                            <div className="flex-1 min-w-0 w-full">
+                                <div className={`truncate text-xs sm:text-sm ${expandedId === log.id ? 'text-white font-bold' : ''}`}>
                                     {log.msg}
                                 </div>
                                 <AnimatePresence>
@@ -176,17 +179,17 @@ export function RuntimeLogs() {
                                         >
                                             <div className="text-xs font-mono pl-4 border-l-2 border-white/20 text-slate-300">
                                                 {'repo' in log && (
-                                                    <div className="flex gap-2 opacity-80 mb-1">
-                                                        <span className="shrink-0">target:</span>
-                                                        <span className="text-cyan-400 font-bold">{log.repo}</span>
+                                                    <div className="flex flex-col sm:flex-row sm:gap-2 opacity-80 mb-1">
+                                                        <span className="shrink-0 text-slate-500 uppercase tracking-tighter sm:tracking-normal">target:</span>
+                                                        <span className="text-cyan-400 font-bold break-all">{log.repo}</span>
                                                     </div>
                                                 )}
-                                                <div className="flex gap-2 opacity-80 mb-1">
-                                                    <span className="shrink-0">details:</span>
-                                                    <span>{log.details}</span>
+                                                <div className="flex flex-col sm:flex-row sm:gap-2 opacity-80 mb-1">
+                                                    <span className="shrink-0 text-slate-500 uppercase tracking-tighter sm:tracking-normal">details:</span>
+                                                    <span className="break-words">{log.details}</span>
                                                 </div>
-                                                <div className="flex gap-2 opacity-80">
-                                                    <span className="shrink-0">status:</span>
+                                                <div className="flex flex-col sm:flex-row sm:gap-2 opacity-80">
+                                                    <span className="shrink-0 text-slate-500 uppercase tracking-tighter sm:tracking-normal">status:</span>
                                                     <span className="text-white font-bold">{log.status}</span>
                                                 </div>
                                             </div>
