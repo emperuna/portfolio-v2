@@ -16,7 +16,7 @@ export function HeroSection() {
             </div>
 
             <div className="container mx-auto px-4 relative z-10">
-                <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
+                <div className="grid gap-6 lg:gap-12 lg:grid-cols-2 lg:items-center">
                     
                     {/* Left: Content & Terminal */}
                     <HeroContent />
