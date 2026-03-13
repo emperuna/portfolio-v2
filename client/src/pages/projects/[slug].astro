@@ -38,7 +38,7 @@ const getImpactColor = (level: string) => {
 ---
 
 <CreativeLayout title={`INCIDENT: ${entry.data.incident_id}`}>
-    <div class="min-h-screen pt-24 pb-24 px-4 bg-[#050505] relative font-mono text-sm group-print:bg-white group-print:text-black overflow-x-hidden">
+    <div class="min-h-screen pt-24 pb-24 px-4 bg-[#050505] relative font-mono text-sm group-print:bg-white group-print:text-black">
         
         {/* Background Texture */}
         <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: repeating-linear-gradient(0deg, transparent, transparent 19px, #fff 20px), repeating-linear-gradient(90deg, transparent, transparent 19px, #fff 20px);"></div>
@@ -198,7 +198,7 @@ const getImpactColor = (level: string) => {
                         <Content />
                     </article>
 
-                    {/* STICKY SIDEBAR */}
+                    {/* SIDEBAR */}
                     <aside class="relative lg:sticky lg:top-32 h-fit self-start w-full border-b border-white/10 pb-8 lg:border-0 lg:pb-0 mb-8 lg:mb-0">
                         <ReportIndex headings={headings} />
                     </aside>
