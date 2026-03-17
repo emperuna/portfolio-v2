@@ -1,4 +1,7 @@
+# Dependencies
 node_modules/
+
+# System
 .DS_Store
 dist/
 .env
@@ -16,3 +19,10 @@ __pycache__/
 # Artifacts
 .agents/
 task.md
+
+# GitHub
+.github/prompts/
+.github/skills/
+
+# OpenSpec
+openspec/
