@@ -3,9 +3,40 @@ import CreativeLayout from '../layouts/CreativeLayout.astro';
 import { TerminalTabs } from '@features/about/TerminalTabs';
 import { SystemSpecs } from '@features/about/SystemSpecs';
 
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Jeremy Garin",
+  "jobTitle": "DevOps / Full-Stack Engineer",
+  "url": "https://jeremygarin.me/about",
+  "sameAs": [
+    "https://github.com/jeremygarin",
+    "https://linkedin.com/in/jeremygarin"
+  ],
+  "knowsAbout": [
+    "DevOps",
+    "SRE",
+    "Platform Engineering",
+    "Kubernetes",
+    "Terraform",
+    "Python",
+    "React",
+    "TypeScript",
+    "Distributed Systems"
+  ],
+  "address": {
+    "@type": "Place",
+    "addressLocality": "Laguna",
+    "addressRegion": "Philippines",
+    "addressCountry": "PH"
+  }
+};
 ---
 
-<CreativeLayout title="Jeremy Garin | Dossier">
+<CreativeLayout title="Jeremy Garin | Dossier" description="Dossier for Jeremy Garin — DevOps / Full-Stack Engineer based in Laguna, Philippines. Skills, experience, and developer journey.">
+    <Fragment slot="head">
+        <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+    </Fragment>
     <div class="min-h-screen pt-24 pb-24 px-4 bg-[#050505] relative font-mono text-sm selection:bg-primary/30">
         
         {/* Vantablack Spotlight Background */}

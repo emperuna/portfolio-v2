@@ -5,13 +5,19 @@ import { NavigationSwitcher } from '../components/layouts/NavigationSwitcher';
 
 interface Props {
   title?: string;
+  description?: string;
+  ogType?: 'website' | 'article';
 }
 
-const { title = "Jeremy Garin | Portfolio" } = Astro.props;
-const currentPath = Astro.url.pathname;
+const {
+  title = "Jeremy Garin | Portfolio",
+  description = "Jeremy Garin — DevOps / Full-Stack Engineer specializing in SRE, platform engineering, and distributed systems.",
+  ogType = "website",
+} = Astro.props;
 
-const activeClass = "bg-white/10 text-white";
-const inactiveClass = "text-text-muted hover:text-white";
+const currentPath = Astro.url.pathname;
+const canonicalURL = Astro.url.href;
+const siteName = "Jeremy Garin Portfolio";
 ---
 
 <!doctype html>
@@ -22,20 +28,40 @@ const inactiveClass = "text-text-muted hover:text-white";
     <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    <!-- Open Graph -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:site_name" content={siteName} />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <ClientRouter />
   </head>
   <body class="min-h-screen font-sans text-text-primary antialiased selection:bg-primary/30 selection:text-white pb-10">
-    
-    {/* Floating Navigation */}
-    <nav class="fixed top-6 left-0 right-0 z-50 flex justify-center sm:justify-center pointer-events-none px-4">
+
+    <!-- Page-specific head content (e.g. JSON-LD schemas) -->
+    <slot name="head" />
+
+    <!-- Skip to main content (accessibility) -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-white focus:font-mono focus:text-sm focus:rounded-sm focus:outline-none focus:ring-2 focus:ring-primary">
+      Skip to main content
+    </a>
+
+    <!-- Floating Navigation -->
+    <nav aria-label="Site navigation" class="fixed top-6 left-0 right-0 z-50 flex justify-center sm:justify-center pointer-events-none px-4">
       <NavigationSwitcher currentPath={currentPath} client:load />
     </nav>
 
     {/* Main Content Area */}
-    <main class="relative z-10 min-h-screen w-full">
+    <main id="main-content" class="relative z-10 min-h-screen w-full">
       <slot />
     </main>
 

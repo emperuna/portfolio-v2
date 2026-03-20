@@ -16,13 +16,8 @@ __pycache__/
 # VSCode
 .vscode/
 
-# Artifacts
-.agents/
-task.md
-
-# GitHub
-.github/prompts/
-.github/skills/
+# OpenCode
+.opencode/
 
 # OpenSpec
 openspec/

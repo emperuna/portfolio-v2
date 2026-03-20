@@ -14,6 +14,21 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content, headings } = await entry.render();
 
+// Article schema for structured data
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": entry.data.title,
+  "description": entry.data.description,
+  "author": {
+    "@type": "Person",
+    "name": "Jeremy Garin"
+  },
+  "datePublished": entry.data.pubDate || entry.data.timeline.start,
+  "dateModified": entry.data.pubDate || entry.data.timeline.start,
+  "url": `https://jeremygarin.me/projects/${entry.slug}`
+};
+
 // Helper to format dates
 const formatDate = (d: string | Date | undefined) => {
     if (!d) return 'ONGOING';
@@ -37,7 +52,14 @@ const getImpactColor = (level: string) => {
 };
 ---
 
-<CreativeLayout title={`INCIDENT: ${entry.data.incident_id}`}>
+<CreativeLayout
+    title={`INCIDENT: ${entry.data.incident_id} — Jeremy Garin`}
+    description={entry.data.description}
+    ogType="article"
+>
+    <Fragment slot="head">
+        <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+    </Fragment>
     <div class="min-h-screen pt-24 pb-24 px-4 bg-[#050505] relative font-mono text-sm group-print:bg-white group-print:text-black">
         
         {/* Background Texture */}
